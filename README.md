@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎨 FrameMint
 
-## Getting Started
+AI-powered YouTube thumbnail generator — type a title, get stunning click-worthy thumbnails in seconds.
 
-First, run the development server:
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | Next.js 15, React 19, Tailwind CSS, Framer Motion |
+| **Backend** | Next.js API Routes, Supabase (Auth + Postgres) |
+| **AI** | Groq (prompt enhancement), HuggingFace (SDXL image gen) |
+| **Editor** | Fabric.js canvas with text, shapes, and export |
+| **Payments** | Cashfree (INR checkout + webhooks) |
+| **Storage** | Google Drive via rclone |
+| **CI/CD** | GitHub Actions → Vercel |
+
+## Quick Start
 
 ```bash
+# 1. Clone & install
+git clone <repo-url> && cd framemint
+npm install
+
+# 2. Configure environment
+cp .env.example .env.local
+# Fill in your Supabase, Groq, HuggingFace, and Cashfree keys
+
+# 3. Run database migrations
+# Apply supabase/migrations/*.sql to your Supabase project
+
+# 4. Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── (auth)/          # Login, OAuth callback
+│   ├── (dashboard)/     # Dashboard, create, editor, gallery, settings, A/B test
+│   ├── (marketing)/     # Landing page, pricing
+│   └── api/             # 14 API routes (generate, user, payments, cron, ab-test)
+├── components/
+│   ├── billing/         # PricingCards, CreditMeter, SubscriptionManager
+│   ├── thumbnail/       # GeneratorForm, StylePicker, VariantGrid, ThumbnailCard
+│   ├── ab-test/         # ABTestCreator, Dashboard, VariantComparison
+│   ├── editor/          # ThumbnailEditor (Fabric.js canvas)
+│   ├── layout/          # Navbar, Sidebar, Footer
+│   └── ui/              # shadcn/ui primitives
+├── lib/
+│   ├── ai/              # Groq, HuggingFace, prompt builder, post-processing
+│   ├── payments/        # Cashfree integration
+│   ├── storage/         # Google Drive (rclone)
+│   ├── video/           # yt-dlp, ffmpeg wrappers
+│   └── supabase/        # Client, server, middleware
+├── hooks/               # useUser, useCredits, useGeneration, useGallery, useABTest
+└── types/               # TypeScript interfaces
+```
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint check |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private — All rights reserved.
