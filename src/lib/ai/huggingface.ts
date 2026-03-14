@@ -7,9 +7,9 @@ const MODELS = [
 ] as const;
 
 // Max wait time for a single model attempt (ms)
-const REQUEST_TIMEOUT = 120_000; // 2 minutes
-const MODEL_LOAD_WAIT = 30_000;  // 30 seconds for model loading
-const MAX_RETRIES = 2;
+const REQUEST_TIMEOUT = 60_000;  // 1 minute
+const MODEL_LOAD_WAIT = 20_000;  // 20 seconds for model loading
+const MAX_RETRIES = 1;
 
 interface GenerateImageOptions {
   prompt: string;

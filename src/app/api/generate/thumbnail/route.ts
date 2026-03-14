@@ -4,7 +4,7 @@ import { generateThumbnail } from '@/lib/ai/pipeline';
 import { generateThumbnailSchema } from '@/lib/validations/generate';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 
-export const maxDuration = 60; // Allow up to 60s for generation
+export const maxDuration = 120; // Allow up to 120s for generation (HF models can be slow)
 
 export async function POST(request: Request) {
   try {

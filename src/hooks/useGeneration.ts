@@ -59,11 +59,20 @@ export function useGeneration(): UseGenerationReturn {
             title: params.title,
             style: params.style,
             platform: params.platform,
-            variants: 4,
+            variants: 2,
           }),
         });
 
-        const data = await response.json();
+        // Safely parse response — may be HTML on timeout/500
+        let data;
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch {
+          console.error('Non-JSON response:', text.substring(0, 200));
+          setError(`Generation failed — server returned an unexpected response (${response.status})`);
+          return null;
+        }
 
         if (!response.ok) {
           const message =
