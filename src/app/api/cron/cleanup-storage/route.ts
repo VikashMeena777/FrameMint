@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { deleteFile } from '@/lib/storage/gdrive';
 
 /**
  * POST /api/cron/cleanup-storage
- * Called by Vercel Cron to delete expired thumbnail variants from storage.
+ * Called by Vercel Cron to delete expired thumbnail variants from Google Drive.
  *
  * Protected by CRON_SECRET header check.
  * Cron schedule: 0 2 * * * (daily at 2 AM)
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     // Find expired variants
     const { data: expired, error: fetchError } = await supabase
       .from('thumbnail_variants')
-      .select('id, storage_key')
+      .select('id, storage_key, gdrive_path')
       .lt('expires_at', new Date().toISOString())
       .not('expires_at', 'is', null)
       .limit(500); // Process in batches
@@ -58,16 +59,17 @@ export async function POST(request: Request) {
       });
     }
 
-    // Delete from storage
-    const storageKeys = expired.map((v) => v.storage_key).filter(Boolean);
-    if (storageKeys.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from('thumbnails')
-        .remove(storageKeys);
-
-      if (storageError) {
-        console.error('Storage cleanup error:', storageError);
-        // Continue with DB cleanup even if storage fails
+    // Delete from Google Drive
+    let gdriveDeleted = 0;
+    for (const v of expired) {
+      const remotePath = v.gdrive_path || v.storage_key;
+      if (remotePath) {
+        try {
+          await deleteFile(remotePath);
+          gdriveDeleted++;
+        } catch {
+          console.warn(`Failed to delete GDrive file: ${remotePath}`);
+        }
       }
     }
 
@@ -93,13 +95,13 @@ export async function POST(request: Request) {
     }
 
     console.log(
-      `Storage cleanup complete. ${expired.length} expired variants removed.`
+      `Storage cleanup complete. ${expired.length} expired variants removed, ${gdriveDeleted} GDrive files deleted.`
     );
 
     return NextResponse.json({
       success: true,
       deleted: expired.length,
-      storageKeysRemoved: storageKeys.length,
+      gdriveFilesRemoved: gdriveDeleted,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

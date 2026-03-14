@@ -158,6 +158,9 @@ export async function POST(request: Request) {
         format: 'png',
         sizeBytes: resultBuffer.length,
       });
+    } finally {
+      cleanupTempFile(tempFile);
+    }
   } catch (error) {
     console.error('Remove-bg error:', error);
     return NextResponse.json(
