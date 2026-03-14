@@ -1,4 +1,4 @@
-const HF_API_URL = 'https://api-inference.huggingface.co/models';
+const HF_API_URL = 'https://router.huggingface.co/hf-inference/models';
 
 // Models in priority order — most reliable free-tier models first
 const MODELS = [

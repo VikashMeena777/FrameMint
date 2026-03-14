@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     }
 
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/briaai/RMBG-1.4',
+      'https://router.huggingface.co/hf-inference/models/briaai/RMBG-1.4',
       {
         method: 'POST',
         headers: {
