@@ -35,7 +35,9 @@ export function ThumbnailCard({
       return;
     }
     try {
+      // imageUrl is now our own proxy (/api/storage/image/...) so fetch works fine
       const response = await fetch(imageUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -46,8 +48,9 @@ export function ThumbnailCard({
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
       toast.success('Downloaded!');
-    } catch {
-      toast.error('Download failed');
+    } catch (err) {
+      console.error('Download failed:', err);
+      toast.error('Download failed — please try again');
     }
   };
 

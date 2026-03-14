@@ -101,8 +101,8 @@ export async function generateThumbnail(
         writeFileSync(tempFilePath, image.buffer);
         console.log(`[Pipeline] Uploading variant ${i + 1} to GDrive...`);
 
-        // Upload to GDrive and get share link
-        const shareUrl = await uploadThumbnail(
+        // Upload to GDrive (creates file + share link)
+        await uploadThumbnail(
           userId,
           thumbnail.id,
           tempFilePath,
@@ -111,14 +111,9 @@ export async function generateThumbnail(
 
         uploadedGDrivePaths.push(gdriveRemotePath);
 
-        // Convert GDrive share link to a direct image URL
-        // rclone link returns: https://drive.google.com/open?id=FILE_ID
-        // We convert to: https://drive.google.com/uc?export=view&id=FILE_ID
-        let imageUrl = shareUrl;
-        const idMatch = shareUrl.match(/[?&]id=([^&]+)/);
-        if (idMatch) {
-          imageUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
-        }
+        // Use our own proxy URL to avoid CORS issues with direct GDrive URLs
+        // The proxy route fetches from GDrive server-side and serves to browser
+        const imageUrl = `/api/storage/image/${gdriveRemotePath}`;
 
         uploadedVariants.push({
           storageKey: gdriveRemotePath,
