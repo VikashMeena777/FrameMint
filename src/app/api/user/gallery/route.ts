@@ -128,17 +128,24 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // Get variants to clean up storage
+    // Get variants to clean up storage from Google Drive
     const { data: variants } = await supabase
       .from('thumbnail_variants')
-      .select('storage_key')
+      .select('storage_key, gdrive_path')
       .eq('thumbnail_id', thumbnailId);
 
-    // Delete storage files
+    // Delete files from Google Drive
     if (variants && variants.length > 0) {
-      const keys = variants.map((v) => v.storage_key).filter(Boolean);
-      if (keys.length > 0) {
-        await supabase.storage.from('thumbnails').remove(keys);
+      const { deleteFile } = await import('@/lib/storage/gdrive');
+      for (const v of variants) {
+        const remotePath = v.gdrive_path || v.storage_key;
+        if (remotePath) {
+          try {
+            await deleteFile(remotePath);
+          } catch {
+            console.warn(`Failed to delete GDrive file: ${remotePath}`);
+          }
+        }
       }
     }
 

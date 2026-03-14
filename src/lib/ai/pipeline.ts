@@ -1,6 +1,10 @@
 import { enhancePrompt, PLATFORM_SIZES } from './groq';
 import { generateMultipleImages } from './huggingface';
+import { uploadThumbnail, cleanupTempFile, deleteFile } from '@/lib/storage/gdrive';
 import { createClient } from '@/lib/supabase/server';
+import { writeFileSync, mkdirSync } from 'fs';
+import path from 'path';
+import os from 'os';
 import type { ThumbnailStyle, Platform } from '@/types';
 
 export interface GenerationParams {
@@ -55,8 +59,12 @@ export async function generateThumbnail(
     throw new Error(`Failed to create thumbnail record: ${insertError?.message}`);
   }
 
+  // Track GDrive paths for rollback
+  const uploadedGDrivePaths: string[] = [];
+
   try {
     // 2. Enhance prompt via Groq
+    console.log('[Pipeline] Step 2: Enhancing prompt via Groq...');
     const enhanced = await enhancePrompt(title, style, platform);
 
     // Update thumbnail with enhanced prompt
@@ -66,6 +74,7 @@ export async function generateThumbnail(
       .eq('id', thumbnail.id);
 
     // 3. Generate images via HuggingFace
+    console.log('[Pipeline] Step 3: Generating images via HuggingFace...');
     const images = await generateMultipleImages(
       {
         prompt: enhanced.enhancedPrompt,
@@ -75,44 +84,67 @@ export async function generateThumbnail(
       Math.min(variantCount, 4)
     );
 
-    // 4. Upload to Supabase Storage
+    // 4. Upload to Google Drive via rclone
+    console.log('[Pipeline] Step 4: Uploading to Google Drive...');
     const uploadedVariants = [];
+    const tempDir = path.join(os.tmpdir(), 'framemint', thumbnail.id);
+    mkdirSync(tempDir, { recursive: true });
+
     for (let i = 0; i < images.length; i++) {
       const image = images[i];
-      const storageKey = `thumbnails/${userId}/${thumbnail.id}/variant_${i + 1}.png`;
+      const filename = `variant_${i + 1}.png`;
+      const tempFilePath = path.join(tempDir, filename);
+      const gdriveRemotePath = `${userId}/thumbnails/${thumbnail.id}/${filename}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('thumbnails')
-        .upload(storageKey, image.buffer, {
-          contentType: image.contentType,
-          cacheControl: '3600',
-          upsert: true,
+      try {
+        // Write buffer to temp file
+        writeFileSync(tempFilePath, image.buffer);
+        console.log(`[Pipeline] Uploading variant ${i + 1} to GDrive...`);
+
+        // Upload to GDrive and get share link
+        const shareUrl = await uploadThumbnail(
+          userId,
+          thumbnail.id,
+          tempFilePath,
+          filename
+        );
+
+        uploadedGDrivePaths.push(gdriveRemotePath);
+
+        // Convert GDrive share link to a direct image URL
+        // rclone link returns: https://drive.google.com/open?id=FILE_ID
+        // We convert to: https://drive.google.com/uc?export=view&id=FILE_ID
+        let imageUrl = shareUrl;
+        const idMatch = shareUrl.match(/[?&]id=([^&]+)/);
+        if (idMatch) {
+          imageUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+        }
+
+        uploadedVariants.push({
+          storageKey: gdriveRemotePath,
+          imageUrl,
+          width,
+          height,
+          format: 'png',
+          sizeBytes: image.buffer.byteLength,
         });
 
-      if (uploadError) {
-        console.error(`Upload variant ${i + 1} failed:`, uploadError);
-        continue;
+        console.log(`[Pipeline] Variant ${i + 1} uploaded successfully`);
+      } catch (uploadError) {
+        console.error(`[Pipeline] Upload variant ${i + 1} failed:`, uploadError);
+        // Continue with other variants
+      } finally {
+        // Clean up temp file
+        cleanupTempFile(tempFilePath);
       }
-
-      const { data: urlData } = supabase.storage
-        .from('thumbnails')
-        .getPublicUrl(storageKey);
-
-      uploadedVariants.push({
-        storageKey,
-        imageUrl: urlData.publicUrl,
-        width,
-        height,
-        format: 'png',
-        sizeBytes: image.buffer.byteLength,
-      });
     }
 
     if (uploadedVariants.length === 0) {
-      throw new Error('Failed to upload any variants');
+      throw new Error('Failed to upload any variants to Google Drive');
     }
 
-    // 5. Save variant records
+    // 5. Save variant records in Supabase
+    console.log('[Pipeline] Step 5: Saving variant records...');
     const { data: savedVariants, error: variantError } = await supabase
       .from('thumbnail_variants')
       .insert(
@@ -120,6 +152,7 @@ export async function generateThumbnail(
           thumbnail_id: thumbnail.id,
           image_url: v.imageUrl,
           storage_key: v.storageKey,
+          gdrive_path: v.storageKey,
           width: v.width,
           height: v.height,
           format: v.format,
@@ -129,10 +162,11 @@ export async function generateThumbnail(
       .select('id, image_url, width, height, format, file_size_bytes');
 
     if (variantError) {
-      console.error('Failed to save variants:', variantError);
+      console.error('[Pipeline] Failed to save variants:', variantError);
     }
 
     // 6. Deduct 1 credit atomically
+    console.log('[Pipeline] Step 6: Deducting credits...');
     const { data: creditResult } = await supabase.rpc('deduct_credits', {
       p_user_id: userId,
       p_amount: 1,
@@ -140,11 +174,16 @@ export async function generateThumbnail(
     });
 
     if (creditResult === false) {
-      // Rollback: clean up the thumbnail
+      // Rollback: clean up from GDrive and database
+      console.warn('[Pipeline] Insufficient credits — rolling back...');
       await supabase.from('thumbnails').delete().eq('id', thumbnail.id);
-      await supabase.storage
-        .from('thumbnails')
-        .remove(uploadedVariants.map((v) => v.storageKey));
+      for (const gdrivePath of uploadedGDrivePaths) {
+        try {
+          await deleteFile(gdrivePath);
+        } catch {
+          console.error(`[Pipeline] Failed to rollback GDrive file: ${gdrivePath}`);
+        }
+      }
       throw new Error('Insufficient credits');
     }
 
@@ -160,6 +199,8 @@ export async function generateThumbnail(
       .select('credits_remaining')
       .eq('user_id', userId)
       .single();
+
+    console.log(`[Pipeline] Done! ${uploadedVariants.length} variants generated.`);
 
     return {
       id: thumbnail.id,
@@ -180,11 +221,13 @@ export async function generateThumbnail(
       creditsRemaining: profile?.credits_remaining ?? 0,
     };
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error('[Pipeline] Generation failed:', errorMessage);
     // Mark as failed
     await supabase
       .from('thumbnails')
-      .update({ status: 'failed', metadata: { error: String(error) } })
+      .update({ status: 'failed', metadata: { error: errorMessage } })
       .eq('id', thumbnail.id);
-    throw error;
+    throw new Error(`Generation failed\n\n${errorMessage}`);
   }
 }

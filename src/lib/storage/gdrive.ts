@@ -11,6 +11,7 @@
 import { exec as execCb } from 'child_process';
 import { writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs';
 import path from 'path';
+import os from 'os';
 import { promisify } from 'util';
 
 const execAsync = promisify(execCb);
@@ -23,11 +24,11 @@ const RCLONE_BASE_DIR = 'framemint';
 /* ---------- internal helpers ---------- */
 
 /**
- * Decode base64-encoded rclone config and write to /tmp/.rclone/rclone.conf
+ * Decode base64-encoded rclone config and write to temp dir
  * Returns the path to the config file.
  */
 function ensureRcloneConfig(): string {
-  const configDir = path.join('/tmp', '.rclone');
+  const configDir = path.join(os.tmpdir(), '.rclone');
   const configPath = path.join(configDir, 'rclone.conf');
 
   // Only re-write if env var exists (skip in dev if already present)

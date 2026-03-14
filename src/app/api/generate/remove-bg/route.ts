@@ -122,41 +122,42 @@ export async function POST(request: Request) {
     }
 
     const resultBuffer = Buffer.from(await response.arrayBuffer());
-    const contentType = response.headers.get('content-type') || 'image/png';
 
-    // Upload to Supabase Storage
-    const storageKey = `${user.id}/remove-bg/${Date.now()}.png`;
-    const { error: uploadError } = await supabase.storage
-      .from('thumbnails')
-      .upload(storageKey, resultBuffer, {
-        contentType,
-        upsert: false,
+    // Upload to Google Drive
+    const { uploadToGDrive, cleanupTempFile } = await import('@/lib/storage/gdrive');
+    const { writeFileSync, mkdirSync } = await import('fs');
+    const path = await import('path');
+    const os = await import('os');
+
+    const tempDir = path.default.join(os.default.tmpdir(), 'framemint', 'remove-bg');
+    mkdirSync(tempDir, { recursive: true });
+    const tempFile = path.default.join(tempDir, `${Date.now()}.png`);
+    writeFileSync(tempFile, resultBuffer);
+
+    const remotePath = `${user.id}/remove-bg/${Date.now()}.png`;
+
+    try {
+      const shareUrl = await uploadToGDrive(tempFile, remotePath);
+
+      // Convert share link to direct image URL
+      let imageUrl = shareUrl;
+      const idMatch = shareUrl.match(/[?&]id=([^&]+)/);
+      if (idMatch) {
+        imageUrl = `https://drive.google.com/uc?export=view&id=${idMatch[1]}`;
+      }
+
+      // Deduct 1 credit
+      await supabase.rpc('deduct_credits', {
+        p_user_id: user.id,
+        p_amount: 1,
+        p_ref: null,
       });
 
-    if (uploadError) {
-      console.error('Storage upload error:', uploadError);
-      return NextResponse.json(
-        { error: 'Failed to save result', code: 'SERVER_ERROR' },
-        { status: 500 }
-      );
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('thumbnails').getPublicUrl(storageKey);
-
-    // Deduct 1 credit
-    await supabase.rpc('deduct_credits', {
-      p_user_id: user.id,
-      p_amount: 1,
-      p_ref: null,
-    });
-
-    return NextResponse.json({
-      imageUrl: publicUrl,
-      format: 'png',
-      sizeBytes: resultBuffer.length,
-    });
+      return NextResponse.json({
+        imageUrl,
+        format: 'png',
+        sizeBytes: resultBuffer.length,
+      });
   } catch (error) {
     console.error('Remove-bg error:', error);
     return NextResponse.json(
