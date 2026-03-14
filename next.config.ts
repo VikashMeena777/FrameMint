@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Include the rclone binary in the serverless function bundle
+  outputFileTracingIncludes: {
+    '/api/*': ['./bin/rclone'],
+  },
 };
 
 export default nextConfig;

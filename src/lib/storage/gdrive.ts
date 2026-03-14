@@ -1,6 +1,8 @@
 /**
- * Google Drive Storage — rclone wrapper
- * Per doc 02-technical-architecture §3.5
+ * Google Drive Storage — rclone wrapper (Vercel-compatible)
+ *
+ * On Vercel: uses bundled rclone binary from ./bin/rclone (downloaded at build time)
+ * Locally: uses system rclone or bundled binary
  *
  * Flow: decode RCLONE_CONFIG_BASE64 → write /tmp/.rclone/rclone.conf
  *       → spawn rclone → upload to GDrive → return share link
@@ -9,7 +11,7 @@
  */
 
 import { exec as execCb } from 'child_process';
-import { writeFileSync, mkdirSync, existsSync, unlinkSync } from 'fs';
+import { writeFileSync, mkdirSync, existsSync, unlinkSync, copyFileSync, chmodSync } from 'fs';
 import path from 'path';
 import os from 'os';
 import { promisify } from 'util';
@@ -22,6 +24,30 @@ const RCLONE_REMOTE = process.env.RCLONE_REMOTE_NAME || 'gdrive';
 const RCLONE_BASE_DIR = 'framemint';
 
 /* ---------- internal helpers ---------- */
+
+/**
+ * Resolve the rclone binary path.
+ * On Vercel (read-only FS), copy bundled binary to /tmp and chmod +x.
+ * Locally, prefer system rclone, fallback to bundled binary.
+ */
+function ensureRcloneBinary(): string {
+  const tmpBin = path.join(os.tmpdir(), 'rclone');
+
+  // Already copied to /tmp — reuse (same Lambda container)
+  if (existsSync(tmpBin)) return tmpBin;
+
+  // Try bundled binary (downloaded by scripts/install-rclone.sh at build time)
+  const bundledBin = path.join(process.cwd(), 'bin', 'rclone');
+  if (existsSync(bundledBin)) {
+    copyFileSync(bundledBin, tmpBin);
+    chmodSync(tmpBin, 0o755);
+    console.log('[rclone] Copied bundled binary to /tmp');
+    return tmpBin;
+  }
+
+  // Fallback: hope rclone is on PATH (local dev on Linux/Mac with rclone installed)
+  return 'rclone';
+}
 
 /**
  * Decode base64-encoded rclone config and write to temp dir
@@ -50,7 +76,8 @@ function ensureRcloneConfig(): string {
  */
 async function rclone(args: string): Promise<string> {
   const cfg = ensureRcloneConfig();
-  const cmd = `rclone --config "${cfg}" ${args}`;
+  const bin = ensureRcloneBinary();
+  const cmd = `"${bin}" --config "${cfg}" ${args}`;
 
   try {
     const { stdout, stderr } = await execAsync(cmd, { timeout: 60_000 });
