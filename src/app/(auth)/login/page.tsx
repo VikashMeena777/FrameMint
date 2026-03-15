@@ -67,15 +67,23 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'var(--fm-bg)' }}>
+    <div className="min-h-screen flex" style={{
+      background: `
+        radial-gradient(ellipse 120% 60% at 50% -10%, rgba(124, 58, 237, 0.22) 0%, transparent 52%),
+        radial-gradient(ellipse 70% 50% at 5% 30%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 50% at 95% 20%, rgba(37, 99, 235, 0.10) 0%, transparent 50%),
+        #030012
+      `
+    }}>
       {/* Left decorative panel */}
       <div
         className="hidden lg:flex lg:w-[45%] xl:w-2/5 relative flex-col items-center justify-center p-12 overflow-hidden border-r border-white/5"
         style={{ background: 'linear-gradient(155deg, rgba(124,58,237,0.12) 0%, rgba(37,99,235,0.04) 100%)' }}
       >
-        <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-25" />
-        <div className="pointer-events-none absolute -top-32 -right-32 h-72 w-72 rounded-full bg-violet-600/12 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -left-32 h-72 w-72 rounded-full bg-blue-600/8 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-30" />
+        <div className="pointer-events-none absolute -top-32 -right-32 h-80 w-80 rounded-full bg-violet-600/[0.16] blur-3xl animate-blob" />
+        <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-blue-600/[0.12] blur-3xl animate-blob animation-delay-4s" />
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-violet-500/[0.06] blur-2xl animate-blob animation-delay-2s" />
 
         <div className="relative w-full max-w-sm">
           {/* Brand */}
@@ -98,7 +106,8 @@ function LoginForm() {
             {demoThumbnails.map((t, i) => (
               <div
                 key={i}
-                className={`relative overflow-hidden rounded-xl aspect-video bg-gradient-to-br ${t.gradient} border border-white/8`}
+                className={`relative overflow-hidden rounded-xl aspect-video bg-gradient-to-br ${t.gradient} border border-white/8 transition-transform duration-300 hover:scale-[1.03]`}
+                style={{ boxShadow: `0 0 20px ${t.accent}22, 0 4px 20px rgba(0,0,0,0.5)` }}
               >
                 {/* Simulated thumbnail content */}
                 <div className="absolute inset-0 p-2.5 flex flex-col justify-between">

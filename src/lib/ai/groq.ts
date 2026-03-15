@@ -21,7 +21,7 @@ const STYLE_DESCRIPTIONS: Record<ThumbnailStyle, string> = {
 };
 
 const PLATFORM_SIZES: Record<Platform, { width: number; height: number }> = {
-  youtube: { width: 1920, height: 1080 },
+  youtube: { width: 1280, height: 720 },
   instagram: { width: 1080, height: 1080 },
   twitter: { width: 1200, height: 675 },
   linkedin: { width: 1200, height: 627 },

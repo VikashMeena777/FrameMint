@@ -71,16 +71,18 @@ function PricingCard({
       className={cn(
         'relative rounded-2xl transition-all duration-300 flex flex-col',
         plan.popular
-          ? 'border border-violet-500/30 shadow-2xl'
+          ? 'border border-violet-400/40 shadow-2xl scale-[1.04] z-10'
           : 'border border-white/7',
         compact ? 'p-5' : 'p-7'
       )}
       style={{
         background: plan.popular
-          ? 'linear-gradient(160deg, rgba(124, 58, 237, 0.15) 0%, rgba(37, 99, 235, 0.06) 100%)'
+          ? 'linear-gradient(160deg, rgba(124, 58, 237, 0.18) 0%, rgba(37, 99, 235, 0.08) 60%, rgba(124, 58, 237, 0.05) 100%)'
           : 'rgba(12, 12, 30, 0.6)',
         backdropFilter: 'blur(20px)',
-        boxShadow: plan.popular ? '0 0 60px rgba(124, 58, 237, 0.15), 0 20px 60px rgba(0,0,0,0.5)' : undefined,
+        boxShadow: plan.popular
+          ? '0 0 0 1px rgba(124, 58, 237, 0.35), 0 0 60px rgba(124, 58, 237, 0.25), 0 0 120px rgba(124, 58, 237, 0.10), 0 20px 60px rgba(0, 0, 0, 0.6)'
+          : undefined,
       }}
     >
       {/* Popular badge */}

@@ -32,7 +32,7 @@ const STYLE_TEMPLATES: Record<string, string> = {
 };
 
 const PLATFORM_DIMENSIONS: Record<string, { width: number; height: number }> = {
-  youtube: { width: 1920, height: 1080 },
+  youtube: { width: 1280, height: 720 },
   instagram: { width: 1080, height: 1080 },
   twitter: { width: 1600, height: 900 },
   linkedin: { width: 1200, height: 627 },

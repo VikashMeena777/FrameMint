@@ -61,11 +61,11 @@
   --fm-error: #EF4444;
 
   /* Backgrounds */
-  --fm-bg: #050510;
-  --fm-bg-2: #08081A;
-  --fm-surface: #0C0C1E;
-  --fm-surface-2: #111128;
-  --fm-surface-3: #16163A;
+  --fm-bg: #030012;
+  --fm-bg-2: #06061A;
+  --fm-surface: #0A0A20;
+  --fm-surface-2: #0F0F2A;
+  --fm-surface-3: #141436;
 
   /* Text */
   --fm-text: #F1F0FF;
@@ -90,7 +90,7 @@
   --shadow-blue: 0 0 40px rgba(37, 99, 235, 0.15);
 
   /* shadcn overrides */
-  --background: #050510;
+  --background: #030012;
   --foreground: #F1F0FF;
   --card: #0C0C1E;
   --card-foreground: #F1F0FF;
@@ -153,22 +153,22 @@
 
 /* ─── Dot Grid Background ─── */
 .bg-dot-grid {
-  background-image: radial-gradient(circle, rgba(124, 58, 237, 0.15) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(circle, rgba(124, 58, 237, 0.18) 1px, transparent 1px);
+  background-size: 30px 30px;
 }
 
 .bg-dot-grid-subtle {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
 /* ─── Glassmorphism System ─── */
 .glass {
-  background: rgba(12, 12, 30, 0.6);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  background: linear-gradient(135deg, rgba(20, 12, 40, 0.65) 0%, rgba(10, 10, 30, 0.55) 100%);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.05), inset 0 0 20px rgba(124, 58, 237, 0.02);
 }
 
 .glass-hover {
@@ -183,19 +183,19 @@
 }
 
 .glass-card {
-  background: rgba(12, 12, 30, 0.6);
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(135deg, rgba(20, 12, 40, 0.65) 0%, rgba(10, 10, 30, 0.55) 100%);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(139, 92, 246, 0.1);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  background: rgba(16, 16, 38, 0.7);
-  border-color: rgba(124, 58, 237, 0.2);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(124, 58, 237, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: linear-gradient(135deg, rgba(28, 16, 52, 0.75) 0%, rgba(14, 14, 38, 0.65) 100%);
+  border-color: rgba(139, 92, 246, 0.28);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(124, 58, 237, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.07);
   transform: translateY(-2px);
 }
 
@@ -270,14 +270,14 @@
 }
 
 .gradient-primary-text {
-  background: linear-gradient(135deg, #A78BFA 0%, #C4B5FD 50%, #93C5FD 100%);
+  background: linear-gradient(135deg, #C084FC 0%, #A78BFA 30%, #38BDF8 85%, #67E8F9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-title-text {
-  background: linear-gradient(135deg, #F1F0FF 0%, #C4B5FD 50%, #93C5FD 100%);
+  background: linear-gradient(135deg, #F1F0FF 0%, #DDD6FE 40%, #BAE6FD 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -289,9 +289,11 @@
 
 .gradient-hero {
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124, 58, 237, 0.2) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(37, 99, 235, 0.1) 0%, transparent 60%),
-    #050510;
+    radial-gradient(ellipse 130% 70% at 50% -10%, rgba(124, 58, 237, 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 5% 20%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 50% at 95% 15%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 60% at 50% 110%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+    #030012;
 }
 
 .gradient-cta {
@@ -323,6 +325,22 @@
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   letter-spacing: -0.01em;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.14) 50%, transparent 100%);
+  transform: translateX(-120%) skewX(-20deg);
+  animation: btn-sweep 4s ease-in-out infinite;
+  animation-delay: 1.5s;
+  pointer-events: none;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -425,6 +443,34 @@
 @keyframes rotate-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* ─── Animated Hero Orbs ─── */
+@keyframes blob-drift {
+  0%, 100% { transform: translate(0px, 0px) scale(1); }
+  25%  { transform: translate(45px, -35px) scale(1.08); }
+  50%  { transform: translate(-30px, 50px) scale(0.94); }
+  75%  { transform: translate(-45px, -20px) scale(1.05); }
+}
+
+.animate-blob { animation: blob-drift 16s ease-in-out infinite; }
+.animation-delay-2s { animation-delay: 2s; }
+.animation-delay-4s { animation-delay: 4s; }
+.animation-delay-6s { animation-delay: 6s; }
+
+/* ─── CTA Button Shimmer Sweep ─── */
+@keyframes btn-sweep {
+  0%   { transform: translateX(-120%) skewX(-20deg); }
+  60%, 100% { transform: translateX(300%) skewX(-20deg); }
+}
+
+/* ─── Navbar Scrolled Enhancement ─── */
+.glass-navbar-scrolled {
+  background: rgba(5, 5, 16, 0.97);
+  backdrop-filter: blur(60px) saturate(1.8);
+  -webkit-backdrop-filter: blur(60px) saturate(1.8);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.18);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 60px rgba(124, 58, 237, 0.06);
 }
 
 .skeleton {

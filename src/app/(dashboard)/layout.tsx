@@ -19,24 +19,18 @@ export default function DashboardLayout({
       </div>
 
       {/* Main content area — pushes right on large screens based on sidebar width */}
-      <div
-        className="flex flex-col transition-all duration-300 ease-in-out"
-        style={{ paddingLeft: undefined }}
-      >
-        {/* Spacer that matches sidebar width on lg+ screens */}
-        <style>{`
-          @media (min-width: 1024px) {
-            [data-dashboard-main] {
-              margin-left: ${collapsed ? '68px' : '240px'};
-            }
+      <style>{`
+        @media (min-width: 1024px) {
+          [data-dashboard-main] {
+            margin-left: ${collapsed ? '68px' : '240px'};
           }
-        `}</style>
-        <div data-dashboard-main="" className="flex flex-col min-h-screen transition-all duration-300 ease-in-out">
-          <Navbar />
-          <main className="flex-1 p-4 lg:p-6 pb-10">
-            {children}
-          </main>
-        </div>
+        }
+      `}</style>
+      <div data-dashboard-main="" className="flex flex-col min-h-screen transition-all duration-300 ease-in-out">
+        <Navbar />
+        <main className="flex-1 p-4 lg:p-6 pb-10">
+          {children}
+        </main>
       </div>
     </div>
   );

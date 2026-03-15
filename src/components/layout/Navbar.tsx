@@ -41,11 +41,13 @@ export function Navbar() {
       {/* Mobile menu */}
       <div className="flex items-center gap-3 lg:hidden">
         <Sheet>
-          <SheetTrigger>
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-white/5">
-              <Menu className="h-5 w-5 text-[var(--fm-text-secondary)]" />
-            </span>
-          </SheetTrigger>
+          <SheetTrigger
+            render={
+              <button className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-white/5">
+                <Menu className="h-5 w-5 text-[var(--fm-text-secondary)]" />
+              </button>
+            }
+          />
           <SheetContent side="left" className="w-[240px] p-0 border-0" style={{ background: 'rgba(8, 8, 26, 0.98)' }}>
             <Sidebar />
           </SheetContent>
@@ -80,21 +82,25 @@ export function Navbar() {
 
         {/* User menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-all hover:bg-white/5">
-              <Avatar className="h-8 w-8 border border-violet-500/30 shadow-lg">
-                <AvatarFallback className="text-xs font-bold" style={{ background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', color: '#fff' }}>
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="hidden sm:block text-left">
-                <p className="text-xs font-medium text-[var(--fm-text)] leading-tight">
-                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
-                </p>
-                <p className="text-[10px] text-[var(--fm-text-secondary)] capitalize leading-tight">
-                  {credits?.plan || 'free'} plan
-                </p>
-              </div>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            render={
+              <button className="flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-all hover:bg-white/5">
+                <Avatar className="h-8 w-8 border border-violet-500/30 shadow-lg">
+                  <AvatarFallback className="text-xs font-bold" style={{ background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', color: '#fff' }}>
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="hidden sm:block text-left">
+                  <p className="text-xs font-medium text-[var(--fm-text)] leading-tight">
+                    {user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'}
+                  </p>
+                  <p className="text-[10px] text-[var(--fm-text-secondary)] capitalize leading-tight">
+                    {credits?.plan || 'free'} plan
+                  </p>
+                </div>
+              </button>
+            }
+          />
           <DropdownMenuContent
             align="end"
             className="w-56 rounded-xl border border-white/8 shadow-2xl"

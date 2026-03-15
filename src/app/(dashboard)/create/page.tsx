@@ -36,7 +36,7 @@ const thumbnailStyles: { value: ThumbnailStyle; label: string; emoji: string }[]
 ];
 
 const platforms: { value: Platform; label: string; size: string; emoji: string }[] = [
-  { value: 'youtube', label: 'YouTube', size: '1920×1080', emoji: '▶' },
+  { value: 'youtube', label: 'YouTube', size: '1280×720', emoji: '▶' },
   { value: 'instagram', label: 'Instagram', size: '1080×1080', emoji: '◻' },
   { value: 'twitter', label: 'Twitter', size: '1200×675', emoji: '✗' },
   { value: 'linkedin', label: 'LinkedIn', size: '1200×627', emoji: 'in' },
