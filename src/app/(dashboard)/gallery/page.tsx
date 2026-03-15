@@ -12,8 +12,8 @@ import {
   Loader2,
   ExternalLink,
   Clock,
+  Sparkles,
 } from 'lucide-react';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGallery } from '@/hooks/useGallery';
@@ -25,7 +25,7 @@ const fadeUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.04, duration: 0.3 },
+    transition: { delay: i * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
@@ -44,19 +44,19 @@ function formatDate(dateString: string) {
   return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
-function styleBadgeColor(style: string) {
+const styleBadgeColor = (style: string) => {
   const map: Record<string, string> = {
-    cinematic: 'bg-amber-500/15 text-amber-400',
-    gaming: 'bg-purple-500/15 text-purple-400',
-    vlog: 'bg-pink-500/15 text-pink-400',
-    educational: 'bg-blue-500/15 text-blue-400',
-    podcast: 'bg-green-500/15 text-green-400',
-    minimal: 'bg-gray-500/15 text-gray-400',
-    'bold-text': 'bg-red-500/15 text-red-400',
-    'split-screen': 'bg-cyan-500/15 text-cyan-400',
+    cinematic: 'bg-violet-500/12 text-violet-300 border-violet-500/20',
+    gaming: 'bg-emerald-500/12 text-emerald-300 border-emerald-500/20',
+    vlog: 'bg-pink-500/12 text-pink-300 border-pink-500/20',
+    educational: 'bg-blue-500/12 text-blue-300 border-blue-500/20',
+    podcast: 'bg-amber-500/12 text-amber-300 border-amber-500/20',
+    minimal: 'bg-slate-500/12 text-slate-300 border-slate-500/20',
+    'bold-text': 'bg-red-500/12 text-red-300 border-red-500/20',
+    'split-screen': 'bg-cyan-500/12 text-cyan-300 border-cyan-500/20',
   };
-  return map[style] || 'bg-white/10 text-white/60';
-}
+  return map[style] || 'bg-white/8 text-white/50 border-white/10';
+};
 
 async function downloadImage(url: string, filename: string) {
   try {
@@ -84,7 +84,6 @@ export default function GalleryPage() {
   const { thumbnails, loading, error, hasMore, fetchMore, deleteThumbnail, toggleFavourite } =
     useGallery(favouritesOnly);
 
-  // Client-side search filter
   const filtered = search.trim()
     ? thumbnails.filter(
         (t) =>
@@ -112,25 +111,22 @@ export default function GalleryPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
-            Gallery
-          </h1>
-          <p className="text-sm text-[var(--fm-text-secondary)] mt-1">
-            {filtered.length} thumbnail{filtered.length !== 1 ? 's' : ''}{' '}
-            {favouritesOnly ? '(favourites)' : ''}
+          <h1 className="text-xl font-bold text-[var(--fm-text)]">Gallery</h1>
+          <p className="text-sm text-[var(--fm-text-secondary)] mt-0.5">
+            {filtered.length} thumbnail{filtered.length !== 1 ? 's' : ''}
+            {favouritesOnly ? ' · favourites' : ''}
           </p>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--fm-text-secondary)]" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--fm-text-muted)]" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search..."
+              placeholder="Search thumbnails..."
               className="glass-input py-2 pl-9 pr-4 text-sm w-48"
             />
           </div>
@@ -139,23 +135,23 @@ export default function GalleryPage() {
           <button
             onClick={() => setFavouritesOnly(!favouritesOnly)}
             className={cn(
-              'btn-glass p-2',
-              favouritesOnly && 'bg-[var(--fm-accent)]/10 border-[var(--fm-accent)]/20'
+              'flex h-9 w-9 items-center justify-center rounded-xl border transition-all',
+              favouritesOnly
+                ? 'bg-rose-500/12 border-rose-500/30 text-rose-400'
+                : 'bg-white/5 border-white/8 text-[var(--fm-text-secondary)] hover:bg-white/8 hover:text-[var(--fm-text)]'
             )}
-            title={favouritesOnly ? 'Show all' : 'Show favourites'}
+            title={favouritesOnly ? 'Show all' : 'Favourites only'}
           >
-            <Heart
-              className={cn('h-4 w-4', favouritesOnly ? 'text-[var(--fm-accent)] fill-[var(--fm-accent)]' : '')}
-            />
+            <Heart className={cn('h-4 w-4', favouritesOnly && 'fill-rose-400')} />
           </button>
 
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden border border-white/5">
+          <div className="flex rounded-xl overflow-hidden border border-white/8 bg-white/3">
             <button
               onClick={() => setView('grid')}
               className={cn(
-                'p-2 transition-colors',
-                view === 'grid' ? 'bg-[var(--fm-primary)]/10 text-[var(--fm-primary)]' : 'text-[var(--fm-text-secondary)] hover:bg-white/5'
+                'flex h-9 w-9 items-center justify-center transition-all',
+                view === 'grid' ? 'bg-violet-600/15 text-[var(--fm-primary-light)]' : 'text-[var(--fm-text-secondary)] hover:bg-white/5'
               )}
             >
               <Grid3X3 className="h-4 w-4" />
@@ -163,8 +159,8 @@ export default function GalleryPage() {
             <button
               onClick={() => setView('list')}
               className={cn(
-                'p-2 transition-colors',
-                view === 'list' ? 'bg-[var(--fm-primary)]/10 text-[var(--fm-primary)]' : 'text-[var(--fm-text-secondary)] hover:bg-white/5'
+                'flex h-9 w-9 items-center justify-center transition-all',
+                view === 'list' ? 'bg-violet-600/15 text-[var(--fm-primary-light)]' : 'text-[var(--fm-text-secondary)] hover:bg-white/5'
               )}
             >
               <LayoutList className="h-4 w-4" />
@@ -176,54 +172,53 @@ export default function GalleryPage() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[var(--fm-primary)]" />
+          <div className="flex items-center gap-3 text-[var(--fm-text-secondary)]">
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--fm-primary)]" />
+            <span className="text-sm">Loading gallery...</span>
+          </div>
         </div>
       )}
 
       {/* Error */}
       {error && !loading && (
-        <GlassCard hover={false} className="p-8 text-center">
-          <p className="text-[var(--fm-error)] mb-2">{error}</p>
-          <button onClick={() => window.location.reload()} className="btn-glass text-sm">
-            Retry
-          </button>
-        </GlassCard>
+        <div className="glass rounded-2xl p-8 text-center">
+          <p className="text-red-400 text-sm mb-3">{error}</p>
+          <button onClick={() => window.location.reload()} className="btn-glass text-sm">Retry</button>
+        </div>
       )}
 
       {/* Empty state */}
       {!loading && !error && filtered.length === 0 && (
         <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
-          <GlassCard hover={false} className="p-16 text-center">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-[var(--fm-primary)]/10">
-              <Image className="h-10 w-10 text-[var(--fm-primary-light)]" />
+          <div className="glass rounded-2xl p-16 text-center">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary opacity-80">
+              <Sparkles className="h-8 w-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
+            <h3 className="text-base font-semibold text-[var(--fm-text)] mb-2">
               {favouritesOnly ? 'No favourites yet' : 'Your gallery is empty'}
             </h3>
-            <p className="text-sm text-[var(--fm-text-secondary)] mb-6 max-w-sm mx-auto">
+            <p className="text-sm text-[var(--fm-text-secondary)] mb-6 max-w-xs mx-auto">
               {favouritesOnly
-                ? 'Heart a thumbnail to add it to your favourites.'
-                : 'Create your first thumbnail and it will appear here.'}
+                ? 'Heart a thumbnail to save it here.'
+                : 'Create your first thumbnail — it only takes seconds!'}
             </p>
             {!favouritesOnly && (
               <Link href="/create" className="btn-primary inline-flex items-center gap-2">
-                <Image className="h-4 w-4" />
+                <Sparkles className="h-4 w-4" />
                 Create Your First Thumbnail
               </Link>
             )}
-          </GlassCard>
+          </div>
         </motion.div>
       )}
 
-      {/* Grid view */}
+      {/* Grid / List */}
       {!loading && !error && filtered.length > 0 && (
         <>
-          <div
-            className={cn(
-              'grid gap-4',
-              view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
-            )}
-          >
+          <div className={cn(
+            'grid gap-4',
+            view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+          )}>
             <AnimatePresence mode="popLayout">
               {filtered.map((thumb, i) => {
                 const firstVariant = thumb.variants[0];
@@ -235,93 +230,76 @@ export default function GalleryPage() {
                     layout
                     initial="hidden"
                     animate="visible"
-                    exit={{ opacity: 0, scale: 0.9 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
                     variants={fadeUp}
                     custom={i}
                   >
-                    <GlassCard className="overflow-hidden group">
+                    <div className={cn(
+                      'glass glass-hover rounded-2xl overflow-hidden group',
+                      view === 'list' && 'flex gap-0'
+                    )}>
                       {/* Image */}
-                      <div
-                        className={cn(
-                          'relative overflow-hidden bg-white/5',
-                          view === 'grid' ? 'aspect-video' : 'h-24 w-40 shrink-0'
-                        )}
-                      >
+                      <div className={cn(
+                        'relative overflow-hidden bg-white/4',
+                        view === 'grid' ? 'aspect-video' : 'h-28 w-48 shrink-0'
+                      )}>
                         {imageUrl ? (
                           <img
                             src={imageUrl}
                             alt={thumb.title}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Image className="h-8 w-8 text-white/20" />
+                            <Image className="h-8 w-8 text-white/15" />
                           </div>
                         )}
 
-                        {/* Overlay actions */}
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                           {imageUrl && (
                             <button
-                              onClick={() =>
-                                downloadImage(imageUrl, `${thumb.title.replace(/\s+/g, '-')}.png`)
-                              }
-                              className="p-2 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors"
-                              title="Download"
+                              onClick={() => downloadImage(imageUrl, `${thumb.title.replace(/\s+/g, '-')}.png`)}
+                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors"
                             >
                               <Download className="h-4 w-4" />
                             </button>
                           )}
                           {imageUrl && (
-                            <a
-                              href={imageUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-2 rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors"
-                              title="Open full size"
-                            >
+                            <a href={imageUrl} target="_blank" rel="noopener noreferrer"
+                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors">
                               <ExternalLink className="h-4 w-4" />
                             </a>
                           )}
                         </div>
 
-                        {/* Variant count badge */}
                         {thumb.variants.length > 1 && (
-                          <span className="absolute top-2 left-2 text-[10px] font-medium bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                          <span className="absolute top-2 left-2 text-[10px] font-semibold bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full text-white/80">
                             {thumb.variants.length} variants
                           </span>
                         )}
                       </div>
 
                       {/* Info */}
-                      <div className="p-4">
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <h3
-                            className="text-sm font-semibold text-[var(--fm-text)] line-clamp-1"
-                            title={thumb.title}
-                          >
+                      <div className="p-4 flex-1">
+                        <div className="flex items-start justify-between gap-2 mb-2.5">
+                          <h3 className="text-sm font-semibold text-[var(--fm-text)] line-clamp-1" title={thumb.title}>
                             {thumb.title}
                           </h3>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
                               onClick={() => handleFavourite(thumb.id)}
-                              className="p-1 rounded-lg hover:bg-white/5 transition-colors"
-                              title="Toggle favourite"
+                              className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-white/5 transition-colors"
                             >
-                              <Heart
-                                className={cn(
-                                  'h-3.5 w-3.5 transition-colors',
-                                  firstVariant?.isFavourite
-                                    ? 'text-[var(--fm-accent)] fill-[var(--fm-accent)]'
-                                    : 'text-[var(--fm-text-secondary)]'
-                                )}
-                              />
+                              <Heart className={cn(
+                                'h-3.5 w-3.5 transition-colors',
+                                firstVariant?.isFavourite ? 'text-rose-400 fill-rose-400' : 'text-[var(--fm-text-secondary)]'
+                              )} />
                             </button>
                             <button
                               onClick={() => handleDelete(thumb.id)}
                               disabled={deletingId === thumb.id}
-                              className="p-1 rounded-lg hover:bg-red-500/10 transition-colors text-[var(--fm-text-secondary)] hover:text-red-400 disabled:opacity-50"
-                              title="Delete"
+                              className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-red-500/10 transition-colors text-[var(--fm-text-secondary)] hover:text-red-400 disabled:opacity-40"
                             >
                               {deletingId === thumb.id ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -333,25 +311,24 @@ export default function GalleryPage() {
                         </div>
 
                         <div className="flex items-center gap-2 text-xs text-[var(--fm-text-secondary)]">
-                          <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-medium', styleBadgeColor(thumb.style))}>
+                          <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-semibold border capitalize', styleBadgeColor(thumb.style))}>
                             {thumb.style}
                           </span>
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 text-[var(--fm-text-muted)]">
                             <Clock className="h-3 w-3" />
                             {formatDate(thumb.createdAt)}
                           </span>
                         </div>
                       </div>
-                    </GlassCard>
+                    </div>
                   </motion.div>
                 );
               })}
             </AnimatePresence>
           </div>
 
-          {/* Load more */}
           {hasMore && (
-            <div className="flex justify-center pt-4">
+            <div className="flex justify-center pt-2">
               <button onClick={fetchMore} className="btn-glass text-sm flex items-center gap-2">
                 Load More
               </button>

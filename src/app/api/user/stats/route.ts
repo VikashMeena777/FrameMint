@@ -16,12 +16,11 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get thumbnail count (only successful generations)
+    // Get thumbnail count
     const { count: thumbnailCount } = await supabase
       .from('thumbnails')
       .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('status', 'completed');
+      .eq('user_id', user.id);
 
     // Get total credits used
     const { data: creditsData } = await supabase

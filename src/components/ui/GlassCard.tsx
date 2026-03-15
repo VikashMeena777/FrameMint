@@ -5,10 +5,6 @@ interface GlassCardProps extends ComponentPropsWithRef<'div'> {
   hover?: boolean;
 }
 
-/**
- * Frosted-glass card component with optional hover effect.
- * Supports forwardRef for framer-motion `motion()` wrapping.
- */
 export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
   ({ hover = true, className, children, ...props }, ref) => {
     return (
