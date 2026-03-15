@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
@@ -9,6 +10,11 @@ const nextConfig: NextConfig = {
     "*.kirk.replit.dev",
     "*.picard.replit.dev",
   ],
+
+  // Bundle the rclone binary into every serverless function that might need it
+  outputFileTracingIncludes: {
+    "/api/**/*": [path.join(__dirname, "bin", "rclone")],
+  },
 };
 
 export default nextConfig;

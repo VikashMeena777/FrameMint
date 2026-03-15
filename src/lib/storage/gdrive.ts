@@ -27,8 +27,8 @@ const RCLONE_BASE_DIR = 'framemint';
 
 /**
  * Resolve the rclone binary path.
- * On Vercel (read-only FS), copy bundled binary to /tmp and chmod +x.
- * Locally, prefer system rclone, fallback to bundled binary.
+ * On Vercel: binary is bundled via outputFileTracingIncludes → copied to /tmp → chmod +x
+ * Locally: prefer system rclone, fallback to bundled binary.
  */
 function ensureRcloneBinary(): string {
   const tmpBin = path.join(os.tmpdir(), 'rclone');
@@ -36,16 +36,31 @@ function ensureRcloneBinary(): string {
   // Already copied to /tmp — reuse (same Lambda container)
   if (existsSync(tmpBin)) return tmpBin;
 
-  // Try bundled binary (downloaded by scripts/install-rclone.sh at build time)
-  const bundledBin = path.join(process.cwd(), 'bin', 'rclone');
-  if (existsSync(bundledBin)) {
-    copyFileSync(bundledBin, tmpBin);
-    chmodSync(tmpBin, 0o755);
-    console.log('[rclone] Copied bundled binary to /tmp');
-    return tmpBin;
+  // Candidate locations for the bundled binary (Vercel bundles it alongside the function)
+  const candidates = [
+    // Vercel serverless: outputFileTracingIncludes puts it relative to the project root
+    path.join(process.cwd(), 'bin', 'rclone'),
+    // Alternative Vercel path via __dirname (some configurations)
+    path.resolve(__dirname, '..', '..', 'bin', 'rclone'),
+    path.resolve(__dirname, '..', 'bin', 'rclone'),
+    path.resolve(__dirname, 'bin', 'rclone'),
+  ];
+
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      try {
+        copyFileSync(candidate, tmpBin);
+        chmodSync(tmpBin, 0o755);
+        console.log(`[rclone] Copied binary from ${candidate} to /tmp`);
+        return tmpBin;
+      } catch (e) {
+        console.warn(`[rclone] Failed to copy from ${candidate}:`, e);
+      }
+    }
   }
 
   // Fallback: hope rclone is on PATH (local dev on Linux/Mac with rclone installed)
+  console.warn('[rclone] No bundled binary found, falling back to system PATH');
   return 'rclone';
 }
 
