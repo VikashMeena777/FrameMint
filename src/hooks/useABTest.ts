@@ -78,7 +78,7 @@ export function useABTest(thumbnailId?: string) {
       const data = await res.json();
       // Refresh list
       await fetchTests(thumbId);
-      return data.testId;
+      return data.id;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
       return null;

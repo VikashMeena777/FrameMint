@@ -22,7 +22,6 @@ interface VariantData {
   width: number;
   height: number;
   format: string;
-  isFavourite: boolean;
   sizeBytes: number | null;
 }
 
@@ -59,17 +58,14 @@ export default function EditorByIdPage({
     if (!thumbnailId) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/user/gallery?limit=50`);
+      const res = await fetch(`/api/user/gallery/${thumbnailId}`);
+      if (res.status === 404) {
+        setError('Thumbnail not found');
+        return;
+      }
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      const found = data.thumbnails?.find(
-        (t: ThumbnailData) => t.id === thumbnailId
-      );
-      if (found) {
-        setThumbnail(found);
-      } else {
-        setError('Thumbnail not found');
-      }
+      setThumbnail(data);
     } catch {
       setError('Failed to load thumbnail');
     } finally {

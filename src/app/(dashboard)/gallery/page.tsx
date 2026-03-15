@@ -293,7 +293,7 @@ export default function GalleryPage() {
                             >
                               <Heart className={cn(
                                 'h-3.5 w-3.5 transition-colors',
-                                firstVariant?.isFavourite ? 'text-rose-400 fill-rose-400' : 'text-[var(--fm-text-secondary)]'
+                                thumb.isFavourite ? 'text-rose-400 fill-rose-400' : 'text-[var(--fm-text-secondary)]'
                               )} />
                             </button>
                             <button

@@ -8,7 +8,6 @@ export interface GalleryVariant {
   width: number;
   height: number;
   format: string;
-  isFavourite: boolean;
   sizeBytes: number | null;
 }
 
@@ -19,6 +18,7 @@ export interface GalleryThumbnail {
   style: string;
   platform: string;
   status: string;
+  isFavourite: boolean;
   createdAt: string;
   variants: GalleryVariant[];
 }
@@ -49,6 +49,7 @@ export function useGallery(favouritesOnly = false): UseGalleryReturn {
 
         const params = new URLSearchParams({ limit: '20' });
         if (append && cursor) params.set('cursor', cursor);
+        if (favouritesOnly) params.set('favourites', 'true');
 
         const res = await fetch(`/api/user/gallery?${params}`);
         if (!res.ok) {
@@ -75,7 +76,7 @@ export function useGallery(favouritesOnly = false): UseGalleryReturn {
         setLoading(false);
       }
     },
-    [cursor]
+    [cursor, favouritesOnly]
   );
 
   const fetchMore = useCallback(async () => {
@@ -109,7 +110,7 @@ export function useGallery(favouritesOnly = false): UseGalleryReturn {
       setThumbnails((prev) =>
         prev.map((t) =>
           t.id === id
-            ? { ...t, variants: t.variants.map((v) => ({ ...v, isFavourite: data.is_favourite })) }
+            ? { ...t, isFavourite: data.is_favourite }
             : t
         )
       );
@@ -129,10 +130,9 @@ export function useGallery(favouritesOnly = false): UseGalleryReturn {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [favouritesOnly]);
 
-  // Client-side filter for favourites (since API doesn't support it directly)
-  const filtered = favouritesOnly
-    ? thumbnails.filter((t) => t.variants.some((v) => v.isFavourite))
-    : thumbnails;
+  // When favouritesOnly is true, API already filters server-side.
+  // No client-side filter needed.
+  const filtered = thumbnails;
 
   return { thumbnails: filtered, loading, error, hasMore, fetchMore, deleteThumbnail, toggleFavourite, refetch };
 }
