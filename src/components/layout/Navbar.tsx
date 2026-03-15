@@ -65,6 +65,7 @@ export function Navbar() {
       {/* Mobile menu trigger */}
       <div className="flex items-center gap-3 lg:hidden">
         <Sheet>
+          {/* @ts-expect-error -- asChild not typed in base-ui but works at runtime */}
           <SheetTrigger asChild>
             <button className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.035] text-[var(--fm-text-secondary)] hover:bg-white/[0.06] hover:text-[var(--fm-text)] transition-all">
               <Menu className="h-4.5 w-4.5" style={{ width: '1.125rem', height: '1.125rem' }} />
@@ -105,6 +106,7 @@ export function Navbar() {
 
         {/* User dropdown */}
         <DropdownMenu>
+          {/* @ts-expect-error -- asChild not typed in base-ui but works at runtime */}
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.03] px-2.5 py-1.5 hover:bg-white/[0.06] hover:border-white/[0.1] transition-all">
               <Avatar className="h-7 w-7">
