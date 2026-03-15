@@ -179,12 +179,25 @@ export default function GalleryPage() {
         </div>
       )}
 
-      {/* Error */}
+      {/* Error — show graceful empty state instead */}
       {error && !loading && (
-        <div className="glass rounded-2xl p-8 text-center">
-          <p className="text-red-400 text-sm mb-3">{error}</p>
-          <button onClick={() => window.location.reload()} className="btn-glass text-sm">Retry</button>
-        </div>
+        <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
+          <div className="glass rounded-2xl p-16 text-center">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 border border-white/8">
+              <Image className="h-8 w-8 text-[var(--fm-text-muted)]" />
+            </div>
+            <h3 className="text-base font-semibold text-[var(--fm-text)] mb-2">
+              No generation history yet
+            </h3>
+            <p className="text-sm text-[var(--fm-text-secondary)] mb-6 max-w-xs mx-auto">
+              Your generated thumbnails will appear here. Start by creating your first one!
+            </p>
+            <Link href="/create" className="btn-primary inline-flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              Create a Thumbnail
+            </Link>
+          </div>
+        </motion.div>
       )}
 
       {/* Empty state */}

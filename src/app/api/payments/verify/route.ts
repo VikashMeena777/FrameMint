@@ -57,11 +57,12 @@ export async function GET(req: Request) {
         await supabase
           .from('profiles')
           .update({
-            plan: order.plan,
-            credits_total: plan.credits,
+            tier: order.plan,
+            credits_monthly_limit: plan.credits,
             credits_remaining: plan.credits,
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', user.id);
+          .eq('user_id', user.id);
 
         // Log the transaction
         await supabase.from('credit_transactions').insert({
