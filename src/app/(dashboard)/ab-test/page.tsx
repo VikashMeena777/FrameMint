@@ -177,7 +177,11 @@ export default function ABTestPage() {
                       </span>
                     </div>
                   </div>
-                  <button className="text-[var(--fm-text-secondary)] hover:text-red-400 transition-colors p-1">
+                  <button
+                    onClick={() => setTests((prev) => prev.filter((t) => t.id !== test.id))}
+                    className="text-[var(--fm-text-secondary)] hover:text-red-400 transition-colors p-1"
+                    title="Delete test"
+                  >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>

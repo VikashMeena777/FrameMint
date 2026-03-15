@@ -31,13 +31,18 @@ export function Footer() {
               Product
             </h3>
             <ul className="space-y-2">
-              {['Features', 'Pricing', 'Gallery', 'API Docs'].map((item) => (
-                <li key={item}>
+              {[
+                { label: 'Features', href: '/#features' },
+                { label: 'Pricing', href: '/#pricing' },
+                { label: 'Gallery', href: '/gallery' },
+                { label: 'Create', href: '/create' },
+              ].map((item) => (
+                <li key={item.label}>
                   <Link
-                    href="#"
+                    href={item.href}
                     className="text-sm text-[var(--fm-text-secondary)] hover:text-[var(--fm-text)] transition-colors"
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -50,13 +55,18 @@ export function Footer() {
               Company
             </h3>
             <ul className="space-y-2">
-              {['About', 'Blog', 'Careers', 'Contact'].map((item) => (
-                <li key={item}>
+              {[
+                { label: 'About', href: '/#how-it-works' },
+                { label: 'Blog', href: '#' },
+                { label: 'Careers', href: '#' },
+                { label: 'Contact', href: 'mailto:support@framemint.com' },
+              ].map((item) => (
+                <li key={item.label}>
                   <Link
-                    href="#"
+                    href={item.href}
                     className="text-sm text-[var(--fm-text-secondary)] hover:text-[var(--fm-text)] transition-colors"
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -69,13 +79,17 @@ export function Footer() {
               Legal
             </h3>
             <ul className="space-y-2">
-              {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
-                <li key={item}>
+              {[
+                { label: 'Privacy Policy', href: '/privacy' },
+                { label: 'Terms of Service', href: '/terms' },
+                { label: 'Cookie Policy', href: '/cookies' },
+              ].map((item) => (
+                <li key={item.label}>
                   <Link
-                    href="#"
+                    href={item.href}
                     className="text-sm text-[var(--fm-text-secondary)] hover:text-[var(--fm-text)] transition-colors"
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -88,13 +102,19 @@ export function Footer() {
             © {new Date().getFullYear()} FrameMint. All rights reserved.
           </p>
           <div className="flex gap-4">
-            {['Twitter', 'GitHub', 'Discord'].map((social) => (
+            {[
+              { label: 'Twitter', href: 'https://twitter.com/framemint' },
+              { label: 'GitHub', href: 'https://github.com/framemint' },
+              { label: 'Discord', href: 'https://discord.gg/framemint' },
+            ].map((social) => (
               <Link
-                key={social}
-                href="#"
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-xs text-[var(--fm-text-secondary)] hover:text-[var(--fm-text)] transition-colors"
               >
-                {social}
+                {social.label}
               </Link>
             ))}
           </div>

@@ -274,22 +274,30 @@
 
 /* ─── Button Variants ─── */
 .btn-primary {
-  background: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
-  color: #FFFFFF;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border-radius: var(--fm-radius-lg);
+  font-size: 0.875rem;
   font-weight: 600;
-  font-family: 'Outfit', sans-serif;
-  transition: all 200ms ease;
+  color: #fff;
+  background: linear-gradient(135deg, var(--fm-primary), var(--fm-secondary));
+  transition: all 0.25s ease;
   cursor: pointer;
+  border: none;
 }
-
-.btn-primary:hover {
-  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.35);
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.9;
   transform: translateY(-1px);
+  box-shadow: 0 4px 24px rgba(108, 92, 231, 0.35);
 }
-
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 .btn-primary:active {
   transform: scale(0.97);
 }

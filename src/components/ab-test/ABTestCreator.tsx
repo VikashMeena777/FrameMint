@@ -63,7 +63,7 @@ export function ABTestCreator({ variants, thumbnailId, onCreated }: ABTestCreato
       }
 
       const data = await res.json();
-      toast.success('A/B Test created!');
+      toast.success(`A/B test "${testName || 'Untitled'}" created!`);
       onCreated?.(data.testId);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to create test');
