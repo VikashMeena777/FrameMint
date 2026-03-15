@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { Sparkles, Image, TrendingUp, Clock, Plus, ArrowRight, Loader2, Zap } from 'lucide-react';
-import { GlassCard } from '@/components/ui/GlassCard';
 import { CreditMeter } from '@/components/billing/CreditMeter';
 import { useUser } from '@/hooks/useUser';
 import { useCredits } from '@/hooks/useCredits';
@@ -47,6 +46,17 @@ function formatTimeAgo(dateString: string) {
   return new Date(dateString).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
 }
 
+const styleGradient: Record<string, string> = {
+  cinematic: 'from-violet-700 to-indigo-800',
+  gaming: 'from-emerald-600 to-teal-700',
+  vlog: 'from-pink-600 to-rose-700',
+  educational: 'from-blue-600 to-indigo-700',
+  podcast: 'from-amber-600 to-orange-700',
+  minimal: 'from-slate-600 to-zinc-700',
+  'bold-text': 'from-red-600 to-orange-700',
+  'split-screen': 'from-teal-600 to-purple-700',
+};
+
 export default function DashboardPage() {
   const { user } = useUser();
   const { credits, loading: creditsLoading } = useCredits();
@@ -73,50 +83,51 @@ export default function DashboardPage() {
 
   const statCards = [
     {
-      label: 'Thumbnails',
+      label: 'Thumbnails Created',
       value: statsLoading ? null : String(stats?.thumbnailCount ?? 0),
       icon: Image,
-      color: 'from-violet-500 to-purple-600',
+      gradient: 'from-violet-500 to-purple-600',
       glow: 'rgba(124, 58, 237, 0.25)',
-      textColor: 'text-violet-300',
     },
     {
       label: 'Credits Used',
       value: statsLoading ? null : String(stats?.totalCreditsUsed ?? 0),
       icon: TrendingUp,
-      color: 'from-blue-500 to-cyan-600',
+      gradient: 'from-blue-500 to-cyan-600',
       glow: 'rgba(37, 99, 235, 0.25)',
-      textColor: 'text-blue-300',
     },
     {
       label: 'Time Saved',
       value: statsLoading ? null : stats?.timeSavedHours ? `${stats.timeSavedHours}h` : '0h',
       icon: Clock,
-      color: 'from-emerald-500 to-teal-600',
+      gradient: 'from-emerald-500 to-teal-600',
       glow: 'rgba(16, 185, 129, 0.25)',
-      textColor: 'text-emerald-300',
     },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
-      {/* Welcome header */}
+    <div className="max-w-6xl mx-auto space-y-7">
+
+      {/* ── Welcome Banner ── */}
       <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
-        <div className="relative overflow-hidden rounded-2xl border border-violet-500/15 p-6"
-          style={{ background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%)' }}>
-          <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-20" />
-          <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-violet-600/10 blur-3xl" />
+        <div className="relative overflow-hidden rounded-2xl border border-violet-500/16 p-6 sm:p-7"
+          style={{ background: 'linear-gradient(135deg, rgba(109,40,217,0.12) 0%, rgba(37,99,235,0.06) 100%)' }}>
+          <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-15" />
+          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-violet-600/12 blur-3xl" />
+          <div className="pointer-events-none absolute -left-10 bottom-0 h-32 w-48 rounded-full bg-blue-600/08 blur-3xl" />
           <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <p className="text-sm text-[var(--fm-text-secondary)] mb-1">Welcome back</p>
-              <h1 className="text-2xl font-bold text-[var(--fm-text)]">
-                {firstName} 👋
+              <p className="text-xs text-[var(--fm-text-secondary)] mb-1.5 font-medium uppercase tracking-wider">
+                Welcome back
+              </p>
+              <h1 className="text-2xl font-bold text-[var(--fm-text)] mb-1">
+                {firstName} ✦
               </h1>
-              <p className="text-sm text-[var(--fm-text-secondary)] mt-1">
+              <p className="text-sm text-[var(--fm-text-secondary)]">
                 Ready to create your next viral thumbnail?
               </p>
             </div>
-            <Link href="/create" className="btn-primary shrink-0 flex items-center gap-2">
+            <Link href="/create" className="btn-primary shrink-0 flex items-center gap-2 py-3 px-5">
               <Plus className="h-4 w-4" />
               New Thumbnail
             </Link>
@@ -124,24 +135,25 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
-      {/* Stats grid */}
+      {/* ── Stats Grid ── */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
         {/* Credits card */}
         <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={1}>
-          <div className="glass rounded-2xl p-5 h-full">
+          <div className="glass rounded-2xl p-5 h-full hover:border-violet-500/20 transition-colors">
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary shadow-md shadow-violet-900/30">
                   <Zap className="h-3.5 w-3.5 text-white" />
                 </div>
-                <span className="text-sm font-medium text-[var(--fm-text)]">Credits</span>
+                <span className="text-sm font-semibold text-[var(--fm-text)]">Credits</span>
               </div>
-              <Link href="/settings/billing" className="text-[10px] text-[var(--fm-primary-light)] hover:underline">
+              <Link href="/settings/billing" className="text-[10px] font-semibold text-[var(--fm-primary-light)] hover:text-white transition-colors bg-violet-600/10 px-2 py-1 rounded-lg border border-violet-500/18">
                 Upgrade
               </Link>
             </div>
             {creditsLoading ? (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <div className="skeleton h-5 w-24" />
                 <div className="skeleton h-2 w-full" />
               </div>
@@ -149,10 +161,14 @@ export default function DashboardPage() {
               <>
                 <CreditMeter remaining={credits.remaining} total={credits.total} size="md" showLabel={false} />
                 <p className="mt-3 text-xs text-[var(--fm-text-secondary)]">
-                  <span className="text-[var(--fm-text)] font-semibold">{credits.remaining}</span> of {credits.total} remaining
+                  <span className="text-[var(--fm-text)] font-bold">{credits.remaining}</span>
+                  <span className="mx-1">of</span>
+                  {credits.total} remaining
                 </p>
               </>
-            ) : null}
+            ) : (
+              <p className="text-sm text-[var(--fm-text-secondary)]">No credit data</p>
+            )}
           </div>
         </motion.div>
 
@@ -160,28 +176,33 @@ export default function DashboardPage() {
         {statCards.map((stat, i) => (
           <motion.div key={stat.label} initial="hidden" animate="visible" variants={fadeUp} custom={i + 2}>
             <div className="glass rounded-2xl p-5 h-full">
-              <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${stat.color}`}
-                style={{ boxShadow: `0 6px 16px ${stat.glow}` }}>
+              <div
+                className={`mb-4 inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}
+                style={{ boxShadow: `0 6px 18px ${stat.glow}` }}
+              >
                 <stat.icon className="h-4 w-4 text-white" />
               </div>
               <div>
                 {stat.value === null ? (
-                  <div className="skeleton h-8 w-16 mb-1" />
+                  <div className="skeleton h-8 w-16 mb-1.5" />
                 ) : (
                   <p className="text-2xl font-bold stat-number">{stat.value}</p>
                 )}
-                <p className="text-xs text-[var(--fm-text-secondary)] mt-1">{stat.label}</p>
+                <p className="text-xs text-[var(--fm-text-secondary)] mt-1.5">{stat.label}</p>
               </div>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Recent Thumbnails */}
+      {/* ── Recent Thumbnails ── */}
       <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={5}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-semibold text-[var(--fm-text)]">Recent Thumbnails</h2>
-          <Link href="/gallery" className="flex items-center gap-1 text-sm text-[var(--fm-primary-light)] hover:text-[var(--fm-text)] transition-colors">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-base font-bold text-[var(--fm-text)]">Recent Thumbnails</h2>
+          <Link
+            href="/gallery"
+            className="flex items-center gap-1 text-sm text-[var(--fm-primary-light)] hover:text-[var(--fm-text)] transition-colors font-medium"
+          >
             View All <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -197,10 +218,11 @@ export default function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {stats.recentThumbnails.map((thumb, i) => {
               const firstVariant = thumb.thumbnail_variants?.[0];
+              const gradClass = styleGradient[thumb.style] || 'from-violet-700 to-indigo-800';
               return (
                 <motion.div key={thumb.id} initial="hidden" animate="visible" variants={fadeUp} custom={i + 6}>
                   <div className="glass glass-hover rounded-2xl overflow-hidden group cursor-pointer">
-                    <div className="aspect-video relative bg-white/5 overflow-hidden">
+                    <div className="aspect-video relative overflow-hidden">
                       {firstVariant?.image_url ? (
                         <img
                           src={firstVariant.image_url}
@@ -208,19 +230,19 @@ export default function DashboardPage() {
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Image className="h-8 w-8 text-white/15" />
+                        <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${gradClass}`}>
+                          <Image className="h-8 w-8 text-white/30" />
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="p-4">
-                      <p className="text-sm font-medium text-[var(--fm-text)] line-clamp-1 mb-1">{thumb.title}</p>
+                      <p className="text-sm font-semibold text-[var(--fm-text)] line-clamp-1 mb-2">{thumb.title}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] text-[var(--fm-text-secondary)] capitalize px-2 py-0.5 rounded-full bg-white/5 border border-white/6">
+                        <span className="text-[10px] font-semibold text-[var(--fm-text-secondary)] capitalize px-2 py-0.5 rounded-full bg-white/[0.045] border border-white/[0.06]">
                           {thumb.style}
                         </span>
-                        <span className="text-[11px] text-[var(--fm-text-muted)]">{formatTimeAgo(thumb.created_at)}</span>
+                        <span className="text-[10px] text-[var(--fm-text-muted)]">{formatTimeAgo(thumb.created_at)}</span>
                       </div>
                     </div>
                   </div>
@@ -230,11 +252,11 @@ export default function DashboardPage() {
           </div>
         ) : (
           <div className="glass rounded-2xl p-16 text-center">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary opacity-80">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary opacity-85 shadow-xl shadow-violet-900/30">
               <Sparkles className="h-8 w-8 text-white" />
             </div>
-            <h3 className="text-base font-semibold text-[var(--fm-text)] mb-2">No thumbnails yet</h3>
-            <p className="text-sm text-[var(--fm-text-secondary)] mb-6 max-w-xs mx-auto">
+            <h3 className="text-base font-bold text-[var(--fm-text)] mb-2">No thumbnails yet</h3>
+            <p className="text-sm text-[var(--fm-text-secondary)] mb-7 max-w-xs mx-auto leading-relaxed">
               Create your first AI-generated thumbnail. It only takes about 30 seconds!
             </p>
             <Link href="/create" className="btn-primary inline-flex items-center gap-2">
@@ -243,6 +265,34 @@ export default function DashboardPage() {
             </Link>
           </div>
         )}
+      </motion.div>
+
+      {/* ── Quick Actions ── */}
+      <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={9}>
+        <h2 className="text-base font-bold text-[var(--fm-text)] mb-4">Quick Actions</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { href: '/create', label: 'Create Thumbnail', desc: 'Generate with AI in 30 sec', icon: Sparkles, gradient: 'from-violet-500 to-purple-600', glow: 'rgba(124,58,237,0.22)' },
+            { href: '/gallery', label: 'Browse Gallery', desc: 'View all your thumbnails', icon: Image, gradient: 'from-blue-500 to-cyan-600', glow: 'rgba(37,99,235,0.22)' },
+            { href: '/settings/billing', label: 'Manage Billing', desc: 'Upgrade or view credits', icon: Zap, gradient: 'from-emerald-500 to-teal-600', glow: 'rgba(16,185,129,0.22)' },
+          ].map((action, i) => (
+            <motion.div key={action.href} variants={fadeUp} custom={i}>
+              <Link href={action.href} className="glass glass-hover rounded-2xl p-4 flex items-center gap-4 group">
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${action.gradient}`}
+                  style={{ boxShadow: `0 6px 18px ${action.glow}` }}
+                >
+                  <action.icon className="h-4.5 w-4.5 text-white" style={{ width: '1.125rem', height: '1.125rem' }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-[var(--fm-text)]">{action.label}</p>
+                  <p className="text-xs text-[var(--fm-text-secondary)] mt-0.5">{action.desc}</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-[var(--fm-text-muted)] group-hover:text-[var(--fm-primary-light)] group-hover:translate-x-0.5 transition-all shrink-0" />
+              </Link>
+            </motion.div>
+          ))}
+        </div>
       </motion.div>
     </div>
   );
