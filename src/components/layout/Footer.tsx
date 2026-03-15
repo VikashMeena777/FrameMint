@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+import Image from 'next/image';
 
 const links = {
   Product: [
@@ -9,9 +9,9 @@ const links = {
     { label: 'Create', href: '/create' },
   ],
   Company: [
-    { label: 'About', href: '#' },
-    { label: 'Blog', href: '#' },
-    { label: 'Careers', href: '#' },
+    { label: 'About', href: '/about' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Careers', href: '/careers' },
     { label: 'Contact', href: 'mailto:support@framemint.com' },
   ],
   Legal: [
@@ -29,8 +29,8 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-5 group w-fit">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl gradient-primary shadow-lg transition-transform group-hover:scale-105">
-                <Sparkles className="h-4 w-4 text-white" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl overflow-hidden shadow-lg transition-transform group-hover:scale-105">
+                <Image src="/logo.jpg" alt="FrameMint" width={32} height={32} className="h-8 w-8 object-cover" />
               </div>
               <span className="text-[15px] font-bold tracking-tight text-[var(--fm-text)]">FrameMint</span>
             </Link>
@@ -38,15 +38,19 @@ export function Footer() {
               AI-powered thumbnail generation for modern creators.
             </p>
             <div className="mt-6 flex gap-3">
-              {['Twitter', 'GitHub', 'Discord'].map((social) => (
+              {[
+                { label: 'Twitter', href: 'https://twitter.com/framemint' },
+                { label: 'GitHub', href: 'https://github.com/framemint' },
+                { label: 'Discord', href: 'https://discord.gg/framemint' },
+              ].map((social) => (
                 <a
-                  key={social}
-                  href="#"
+                  key={social.label}
+                  href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-[var(--fm-text-secondary)] hover:text-[var(--fm-text)] transition-colors py-1"
                 >
-                  {social}
+                  {social.label}
                 </a>
               ))}
             </div>

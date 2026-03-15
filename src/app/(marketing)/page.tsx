@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
@@ -24,9 +25,11 @@ import {
   TrendingUp,
   Users,
   Globe,
+  LogOut,
 } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
@@ -321,11 +324,23 @@ export default function LandingPage() {
   const [showDemo, setShowDemo] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 24);
     window.addEventListener('scroll', handler, { passive: true });
     return () => window.removeEventListener('scroll', handler);
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   return (
@@ -362,8 +377,8 @@ export default function LandingPage() {
         {/* ── Navbar ── */}
         <nav className={`sticky top-0 z-40 flex items-center justify-between px-5 py-3.5 sm:px-8 lg:px-14 transition-all duration-300 ${scrolled ? 'glass-navbar-scrolled' : 'glass-navbar'}`}>
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl gradient-primary shadow-lg shadow-violet-900/30">
-              <Sparkles className="h-4 w-4 text-white" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-violet-900/30">
+              <Image src="/logo.jpg" alt="FrameMint" width={32} height={32} className="h-8 w-8 object-cover" />
             </div>
             <span className="text-[15px] font-bold tracking-tight text-[var(--fm-text)]">FrameMint</span>
           </Link>
@@ -381,10 +396,21 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link href="/login" className="btn-glass text-sm py-2 px-4 hidden sm:inline-flex">Log in</Link>
-            <Link href="/login" className="btn-primary text-sm py-2 px-4">
-              Get Started Free
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link href="/dashboard" className="btn-primary text-sm py-2 px-4">
+                  Dashboard
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="btn-glass text-sm py-2 px-4 hidden sm:inline-flex">Log in</Link>
+                <Link href="/login" className="btn-primary text-sm py-2 px-4">
+                  Get Started Free
+                </Link>
+              </>
+            )}
           </div>
         </nav>
 

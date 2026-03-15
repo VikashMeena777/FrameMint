@@ -111,7 +111,7 @@ export async function createOrder(req: CashfreeOrderRequest): Promise<CashfreeOr
     order_meta: {
       return_url: req.returnUrl,
       notify_url: req.notifyUrl,
-      payment_methods: 'cc,dc,upi,nb,wallet',
+      payment_methods: 'cc,dc,upi,nb,app,paylater',
     },
     order_tags: req.orderMeta
       ? { plan: req.orderMeta.plan, user_id: req.orderMeta.userId }

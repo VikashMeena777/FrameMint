@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -39,8 +40,12 @@ interface SidebarProps {
 export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   const pathname = usePathname();
 
-  const isActive = (href: string) =>
-    pathname === href || (href !== '/dashboard' && pathname.startsWith(href + '/'));
+  const isActive = (href: string) => {
+    if (pathname === href) return true;
+    // Don't let /settings match /settings/billing — only match children for non-leaf routes
+    if (href === '/settings') return false;
+    return href !== '/dashboard' && pathname.startsWith(href + '/');
+  };
 
   return (
     <aside
@@ -55,8 +60,8 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
         collapsed ? 'justify-center px-0' : 'px-4 gap-3'
       )}>
         <Link href="/" className="flex items-center gap-3 group min-w-0">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl gradient-primary shadow-lg shadow-violet-900/40 transition-transform group-hover:scale-105">
-            <Sparkles className="h-4 w-4 text-white" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl overflow-hidden shadow-lg shadow-violet-900/40 transition-transform group-hover:scale-105">
+            <Image src="/logo.jpg" alt="FrameMint" width={32} height={32} className="h-8 w-8 object-cover" />
           </div>
           {!collapsed && (
             <span className="text-[15px] font-bold tracking-tight text-[var(--fm-text)] truncate">

@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, Sparkles, Bell } from 'lucide-react';
+import Image from 'next/image';
+import { Menu, Bell } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -27,6 +28,7 @@ export function Navbar() {
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+    router.refresh();
     router.push('/');
   };
 
@@ -76,8 +78,8 @@ export function Navbar() {
           </SheetContent>
         </Sheet>
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg gradient-primary">
-            <Sparkles className="h-3.5 w-3.5 text-white" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg overflow-hidden">
+            <Image src="/logo.jpg" alt="FrameMint" width={28} height={28} className="h-7 w-7 object-cover" />
           </div>
           <span className="text-sm font-bold text-[var(--fm-text)]">FrameMint</span>
         </Link>
