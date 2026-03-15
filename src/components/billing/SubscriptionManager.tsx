@@ -33,7 +33,7 @@ const plans = [
 
 export function SubscriptionManager() {
   const { credits } = useCredits();
-  const { checkout, loading } = useCashfreeCheckout();
+  const { checkout, loadingPlan } = useCashfreeCheckout();
 
   const activePlan = credits?.plan || 'free';
   const currentPlan = plans.find((p) => p.id === activePlan) || plans[0];
@@ -92,6 +92,8 @@ export function SubscriptionManager() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {plans.map((p) => {
           const isCurrent = p.id === currentPlan.id;
+          const isThisLoading = loadingPlan === p.id;
+          const anyLoading = loadingPlan !== null;
 
           return (
             <div
@@ -126,7 +128,7 @@ export function SubscriptionManager() {
 
               <button
                 onClick={() => handleUpgrade(p.id)}
-                disabled={isCurrent || p.price === 0 || loading}
+                disabled={isCurrent || p.price === 0 || anyLoading}
                 className={cn(
                   'w-full mt-3 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-all',
                   isCurrent
@@ -138,8 +140,11 @@ export function SubscriptionManager() {
               >
                 {isCurrent ? (
                   'Current Plan'
-                ) : loading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : isThisLoading ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Processing...
+                  </>
                 ) : (
                   <>
                     Upgrade <ArrowUpRight className="h-3.5 w-3.5" />

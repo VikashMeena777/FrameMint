@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Zap } from 'lucide-react';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -8,14 +8,18 @@ export function Footer() {
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-                <Zap className="h-4 w-4 text-white" />
-              </div>
+            <Link href="/" className="flex items-center gap-2 mb-4 group w-fit">
+              <Image
+                src="/logo.jpg"
+                alt="FrameMint"
+                width={32}
+                height={32}
+                className="rounded-lg transition-transform group-hover:scale-105"
+              />
               <span className="text-lg font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 FrameMint
               </span>
-            </div>
+            </Link>
             <p className="text-sm text-[var(--fm-text-secondary)] max-w-xs">
               AI-powered thumbnail generator. Create scroll-stopping thumbnails in seconds.
             </p>

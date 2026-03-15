@@ -12,7 +12,7 @@ interface PricingCardsProps {
 }
 
 export function PricingCards({ currentPlan, compact = false }: PricingCardsProps) {
-  const { checkout, loading } = useCashfreeCheckout();
+  const { checkout, loadingPlan } = useCashfreeCheckout();
   const router = useRouter();
 
   const handleUpgrade = (plan: PlanDetails) => {
@@ -34,7 +34,8 @@ export function PricingCards({ currentPlan, compact = false }: PricingCardsProps
           plan={plan}
           isCurrent={currentPlan === plan.slug}
           compact={compact}
-          loading={loading}
+          isLoading={loadingPlan === plan.slug}
+          anyLoading={loadingPlan !== null}
           onUpgrade={() => handleUpgrade(plan)}
         />
       ))}
@@ -46,13 +47,15 @@ function PricingCard({
   plan,
   isCurrent,
   compact,
-  loading,
+  isLoading,
+  anyLoading,
   onUpgrade,
 }: {
   plan: PlanDetails;
   isCurrent: boolean;
   compact: boolean;
-  loading: boolean;
+  isLoading: boolean;
+  anyLoading: boolean;
   onUpgrade: () => void;
 }) {
   return (
@@ -111,10 +114,10 @@ function PricingCard({
               ? 'bg-white/5 text-[var(--fm-text-secondary)] cursor-default border border-white/10'
               : 'btn-glass'
         )}
-        disabled={isCurrent || loading}
+        disabled={isCurrent || anyLoading}
         onClick={onUpgrade}
       >
-        {loading && !isCurrent ? (
+        {isLoading ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
             Processing...

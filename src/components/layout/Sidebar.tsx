@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Sparkles,
-  Image,
+  Image as ImageIcon,
   Settings,
   CreditCard,
-  Zap,
   ChevronLeft,
   Wand2,
   FlaskConical,
@@ -20,7 +20,7 @@ const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Create', href: '/create', icon: Sparkles },
   { label: 'Editor', href: '/editor', icon: Wand2 },
-  { label: 'Gallery', href: '/gallery', icon: Image },
+  { label: 'Gallery', href: '/gallery', icon: ImageIcon },
   { label: 'A/B Testing', href: '/ab-test', icon: FlaskConical },
   { label: 'Video Extract', href: '/video-extract', icon: Film },
   { label: 'Settings', href: '/settings', icon: Settings },
@@ -44,14 +44,20 @@ export function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
     >
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 px-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl gradient-primary">
-          <Zap className="h-5 w-5 text-white" />
-        </div>
-        {!collapsed && (
-          <span className="text-lg font-bold tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>
-            FrameMint
-          </span>
-        )}
+        <Link href="/" className="flex items-center gap-3 group">
+          <Image
+            src="/logo.jpg"
+            alt="FrameMint"
+            width={36}
+            height={36}
+            className="shrink-0 rounded-lg transition-transform group-hover:scale-105"
+          />
+          {!collapsed && (
+            <span className="text-lg font-bold tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>
+              FrameMint
+            </span>
+          )}
+        </Link>
         {onToggle && (
           <button
             onClick={onToggle}

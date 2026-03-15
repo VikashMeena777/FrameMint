@@ -5,16 +5,17 @@ import { toast } from 'sonner';
 
 /**
  * Hook to initiate Cashfree checkout for a plan upgrade.
+ * Returns loadingPlan (slug of plan being processed) instead of generic boolean.
  *
  * Usage:
- *   const { checkout, loading } = useCashfreeCheckout();
- *   <button onClick={() => checkout('pro')} disabled={loading}>Upgrade</button>
+ *   const { checkout, loadingPlan } = useCashfreeCheckout();
+ *   <button onClick={() => checkout('pro')} disabled={loadingPlan === 'pro'}>Upgrade</button>
  */
 export function useCashfreeCheckout() {
-  const [loading, setLoading] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const checkout = async (plan: 'pro' | 'enterprise') => {
-    setLoading(true);
+    setLoadingPlan(plan);
 
     try {
       // 1. Create order on our backend
@@ -27,11 +28,18 @@ export function useCashfreeCheckout() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || 'Failed to create order');
+        const errorMsg = data.error || 'Failed to create order';
+        console.error('[checkout] API error:', errorMsg, data);
+        toast.error(errorMsg);
         return;
       }
 
       const { paymentSessionId } = data;
+
+      if (!paymentSessionId) {
+        toast.error('No payment session received. Please try again.');
+        return;
+      }
 
       // 2. Load Cashfree SDK and open checkout
       const cfEnv = process.env.NEXT_PUBLIC_CASHFREE_ENV || 'sandbox';
@@ -54,9 +62,9 @@ export function useCashfreeCheckout() {
       console.error('[checkout]', err);
       toast.error('Something went wrong. Please try again.');
     } finally {
-      setLoading(false);
+      setLoadingPlan(null);
     }
   };
 
-  return { checkout, loading };
+  return { checkout, loadingPlan };
 }

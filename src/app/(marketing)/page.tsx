@@ -1,17 +1,23 @@
 'use client';
 
 import Link from 'next/link';
+import NextImage from 'next/image';
 import { motion } from 'framer-motion';
 import {
-  Zap,
   Sparkles,
   ArrowRight,
   Play,
-  Image,
   Wand2,
   Download,
+  Image as ImageIcon,
   CheckCircle2,
   ChevronDown,
+  Clapperboard,
+  Gamepad2,
+  Camera,
+  GraduationCap,
+  Mic2,
+  Minus,
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { PricingCards } from '@/components/billing/PricingCards';
@@ -28,12 +34,12 @@ const fadeUp = {
 };
 
 const styles = [
-  { name: 'Cinematic', gradient: 'from-purple-600 to-blue-500' },
-  { name: 'Gaming', gradient: 'from-green-500 to-cyan-500' },
-  { name: 'Vlog', gradient: 'from-pink-500 to-orange-400' },
-  { name: 'Educational', gradient: 'from-blue-500 to-indigo-500' },
-  { name: 'Podcast', gradient: 'from-amber-500 to-red-500' },
-  { name: 'Minimal', gradient: 'from-gray-400 to-gray-600' },
+  { name: 'Cinematic', gradient: 'from-purple-600 to-blue-500', desc: 'Epic movie poster look', icon: Clapperboard },
+  { name: 'Gaming', gradient: 'from-green-500 to-cyan-500', desc: 'High-energy neon vibes', icon: Gamepad2 },
+  { name: 'Vlog', gradient: 'from-pink-500 to-orange-400', desc: 'Warm, personal feel', icon: Camera },
+  { name: 'Educational', gradient: 'from-blue-500 to-indigo-500', desc: 'Clean & professional', icon: GraduationCap },
+  { name: 'Podcast', gradient: 'from-amber-500 to-red-500', desc: 'Bold audio aesthetic', icon: Mic2 },
+  { name: 'Minimal', gradient: 'from-gray-400 to-gray-600', desc: 'Less is more', icon: Minus },
 ];
 
 const steps = [
@@ -48,7 +54,7 @@ const steps = [
     description: 'Our AI creates 4 stunning thumbnail variants in seconds.',
   },
   {
-    icon: Image,
+    icon: ImageIcon,
     title: 'Customize & Edit',
     description: 'Fine-tune with live editor — add text, adjust colors, swap styles.',
   },
@@ -87,14 +93,18 @@ export default function LandingPage() {
     <div className="min-h-screen gradient-hero">
       {/* Navbar */}
       <nav className="glass-navbar sticky top-0 z-50 flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-            <Zap className="h-4 w-4 text-white" />
-          </div>
+        <Link href="/" className="flex items-center gap-2 group">
+          <NextImage
+            src="/logo.jpg"
+            alt="FrameMint"
+            width={32}
+            height={32}
+            className="rounded-lg transition-transform group-hover:scale-105"
+          />
           <span className="text-lg font-bold" style={{ fontFamily: 'Outfit, sans-serif' }}>
             FrameMint
           </span>
-        </div>
+        </Link>
         <div className="hidden md:flex items-center gap-6">
           <a href="#features" className="text-sm text-[var(--fm-text-secondary)] hover:text-[var(--fm-text)] transition-colors">
             Features
@@ -219,21 +229,30 @@ export default function LandingPage() {
         </motion.div>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-          {styles.map((style, i) => (
-            <motion.div
-              key={style.name}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              custom={i}
-            >
-              <GlassCard className="p-4 text-center cursor-pointer">
-                <div className={`mx-auto mb-3 h-20 w-full rounded-xl bg-gradient-to-br ${style.gradient} opacity-60`} />
-                <p className="text-sm font-medium text-[var(--fm-text)]">{style.name}</p>
-              </GlassCard>
-            </motion.div>
-          ))}
+          {styles.map((style, i) => {
+            const IconComp = style.icon;
+            return (
+              <motion.div
+                key={style.name}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                custom={i}
+              >
+                <GlassCard className="p-5 text-center cursor-pointer group">
+                  {/* Gradient accent strip */}
+                  <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r ${style.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                  {/* Icon */}
+                  <div className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${style.gradient} shadow-lg`}>
+                    <IconComp className="h-6 w-6 text-white" />
+                  </div>
+                  <p className="text-sm font-semibold text-[var(--fm-text)]">{style.name}</p>
+                  <p className="text-[11px] text-[var(--fm-text-secondary)] mt-1 opacity-70">{style.desc}</p>
+                </GlassCard>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 

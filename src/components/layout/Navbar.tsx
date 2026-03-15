@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, Zap, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { Menu, Sparkles } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -47,14 +48,18 @@ export function Navbar() {
             <Sidebar />
           </SheetContent>
         </Sheet>
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg gradient-primary">
-            <Zap className="h-4 w-4 text-white" />
-          </div>
+        <Link href="/" className="flex items-center gap-2 group">
+          <Image
+            src="/logo.jpg"
+            alt="FrameMint"
+            width={28}
+            height={28}
+            className="rounded-lg transition-transform group-hover:scale-105"
+          />
           <span className="text-sm font-bold" style={{ fontFamily: 'var(--font-outfit)' }}>
             FrameMint
           </span>
-        </div>
+        </Link>
       </div>
 
       {/* Desktop spacer (sidebar handles logo) */}

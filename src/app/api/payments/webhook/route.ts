@@ -75,12 +75,7 @@ export async function POST(req: Request) {
           user_id: order.user_id,
           amount: plan.credits,
           type: 'purchase',
-          description: `Upgraded to ${plan.name} plan (webhook)`,
-          metadata: {
-            order_id: orderId,
-            cf_payment_id: cfPaymentId,
-            source: 'webhook',
-          },
+          description: `Upgraded to ${plan.name} plan — order ${orderId}${cfPaymentId ? `, cf_payment: ${cfPaymentId}` : ''}`,
         });
       }
 
