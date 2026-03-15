@@ -44,8 +44,8 @@ export async function GET() {
       .select(`
         id,
         title,
-        style,
-        platform,
+        style_preset,
+        platform_preset,
         is_favourite,
         created_at,
         thumbnail_variants (

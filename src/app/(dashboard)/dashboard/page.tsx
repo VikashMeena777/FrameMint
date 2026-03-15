@@ -24,8 +24,8 @@ interface DashboardStats {
   recentThumbnails: Array<{
     id: string;
     title: string;
-    style: string;
-    platform: string;
+    style_preset: string;
+    platform_preset: string;
     is_favourite: boolean;
     created_at: string;
     thumbnail_variants: Array<{
@@ -218,7 +218,7 @@ export default function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {stats.recentThumbnails.map((thumb, i) => {
               const firstVariant = thumb.thumbnail_variants?.[0];
-              const gradClass = styleGradient[thumb.style] || 'from-violet-700 to-indigo-800';
+              const gradClass = styleGradient[thumb.style_preset] || 'from-violet-700 to-indigo-800';
               return (
                 <motion.div key={thumb.id} initial="hidden" animate="visible" variants={fadeUp} custom={i + 6}>
                   <div className="glass glass-hover rounded-2xl overflow-hidden group cursor-pointer">
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                       <p className="text-sm font-semibold text-[var(--fm-text)] line-clamp-1 mb-2">{thumb.title}</p>
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] font-semibold text-[var(--fm-text-secondary)] capitalize px-2 py-0.5 rounded-full bg-white/[0.045] border border-white/[0.06]">
-                          {thumb.style}
+                          {thumb.style_preset}
                         </span>
                         <span className="text-[10px] text-[var(--fm-text-muted)]">{formatTimeAgo(thumb.created_at)}</span>
                       </div>

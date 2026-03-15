@@ -37,7 +37,7 @@ export function useABTest(thumbnailId?: string) {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/ab-tests?thumbnailId=${tid}`);
+      const res = await fetch(`/api/ab-test/list?thumbnailId=${tid}`);
       if (!res.ok) throw new Error('Failed to fetch tests');
       const data = await res.json();
       setTests(data.tests || []);
@@ -59,7 +59,7 @@ export function useABTest(thumbnailId?: string) {
   ): Promise<string | null> => {
     setError(null);
     try {
-      const res = await fetch('/api/ab-tests', {
+      const res = await fetch('/api/ab-test/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -90,7 +90,7 @@ export function useABTest(thumbnailId?: string) {
    */
   const recordImpression = useCallback(async (testId: string, variant: 'a' | 'b') => {
     try {
-      await fetch(`/api/ab-tests/${testId}/impression`, {
+      await fetch(`/api/ab-test/${testId}/impression`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ variant }),
@@ -105,7 +105,7 @@ export function useABTest(thumbnailId?: string) {
    */
   const recordClick = useCallback(async (testId: string, variant: 'a' | 'b') => {
     try {
-      await fetch(`/api/ab-tests/${testId}/click`, {
+      await fetch(`/api/ab-test/${testId}/click`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ variant }),
@@ -121,7 +121,7 @@ export function useABTest(thumbnailId?: string) {
   const endTest = useCallback(async (testId: string): Promise<boolean> => {
     setError(null);
     try {
-      const res = await fetch(`/api/ab-tests/${testId}`, {
+      const res = await fetch(`/api/ab-test/${testId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'completed' }),
@@ -142,7 +142,7 @@ export function useABTest(thumbnailId?: string) {
   const deleteTest = useCallback(async (testId: string): Promise<boolean> => {
     setError(null);
     try {
-      const res = await fetch(`/api/ab-tests/${testId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/ab-test/${testId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete test');
       setTests((prev) => prev.filter((t) => t.id !== testId));
       return true;

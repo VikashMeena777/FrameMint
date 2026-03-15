@@ -7,18 +7,16 @@ export function useCredits() {
   const [credits, setCredits] = useState<CreditBalance | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState<string | null>(null);
+
   const fetchCredits = useCallback(async () => {
     try {
+      setError(null);
       const response = await fetch('/api/user/credits');
       if (!response.ok) {
-        // User not authenticated or server error — return defaults
-        setCredits({
-          remaining: 5,
-          total: 5,
-          used: 0,
-          percentage: 0,
-          plan: 'free',
-        });
+        // User not authenticated or server error
+        setError('Failed to load credits');
+        setCredits(null);
         return;
       }
 
@@ -31,13 +29,8 @@ export function useCredits() {
         plan: data.plan,
       });
     } catch {
-      setCredits({
-        remaining: 5,
-        total: 5,
-        used: 0,
-        percentage: 0,
-        plan: 'free',
-      });
+      setError('Failed to load credits');
+      setCredits(null);
     } finally {
       setLoading(false);
     }
@@ -47,5 +40,5 @@ export function useCredits() {
     fetchCredits();
   }, [fetchCredits]);
 
-  return { credits, loading, refetch: fetchCredits };
+  return { credits, loading, error, refetch: fetchCredits };
 }

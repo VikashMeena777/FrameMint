@@ -13,6 +13,7 @@ export interface GenerationParams {
   style: ThumbnailStyle;
   platform: Platform;
   variants?: number;
+  skipCreditDeduction?: boolean;
 }
 
 export interface GenerationResult {
@@ -160,26 +161,30 @@ export async function generateThumbnail(
       console.error('[Pipeline] Failed to save variants:', variantError);
     }
 
-    // 6. Deduct 1 credit atomically
-    console.log('[Pipeline] Step 6: Deducting credits...');
-    const { data: creditResult } = await supabase.rpc('deduct_credits', {
-      p_user_id: userId,
-      p_amount: 1,
-      p_ref: thumbnail.id,
-    });
+    // 6. Deduct 1 credit atomically (skip if already handled by route)
+    if (!params.skipCreditDeduction) {
+      console.log('[Pipeline] Step 6: Deducting credits...');
+      const { data: creditResult } = await supabase.rpc('deduct_credits', {
+        p_user_id: userId,
+        p_amount: 1,
+        p_ref: thumbnail.id,
+      });
 
-    if (creditResult === false) {
-      // Rollback: clean up from GDrive and database
-      console.warn('[Pipeline] Insufficient credits — rolling back...');
-      await supabase.from('thumbnails').delete().eq('id', thumbnail.id);
-      for (const gdrivePath of uploadedGDrivePaths) {
-        try {
-          await deleteFile(gdrivePath);
-        } catch {
-          console.error(`[Pipeline] Failed to rollback GDrive file: ${gdrivePath}`);
+      if (creditResult === false) {
+        // Rollback: clean up from GDrive and database
+        console.warn('[Pipeline] Insufficient credits — rolling back...');
+        await supabase.from('thumbnails').delete().eq('id', thumbnail.id);
+        for (const gdrivePath of uploadedGDrivePaths) {
+          try {
+            await deleteFile(gdrivePath);
+          } catch {
+            console.error(`[Pipeline] Failed to rollback GDrive file: ${gdrivePath}`);
+          }
         }
+        throw new Error('Insufficient credits');
       }
-      throw new Error('Insufficient credits');
+    } else {
+      console.log('[Pipeline] Step 6: Skipping credit deduction (pre-deducted).');
     }
 
     // 7. Mark as completed

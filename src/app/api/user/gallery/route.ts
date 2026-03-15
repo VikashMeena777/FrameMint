@@ -29,6 +29,7 @@ export async function GET(request: Request) {
         style_preset,
         platform_preset,
         status,
+        is_favourite,
         created_at,
         thumbnail_variants (
           id,
@@ -36,13 +37,20 @@ export async function GET(request: Request) {
           width,
           height,
           format,
-          is_favourite,
           file_size_bytes
         )
       `
       )
       .eq('user_id', user.id)
-      .in('status', ['completed', 'generating'])
+      .in('status', ['completed', 'generating']);
+
+    // Bug #8: Add favourites filter
+    const favouritesOnly = searchParams.get('favourites');
+    if (favouritesOnly === 'true') {
+      query = query.eq('is_favourite', true);
+    }
+
+    query = query
       .order('created_at', { ascending: false })
       .limit(limit + 1); // Fetch one extra to check hasMore
 
@@ -75,6 +83,7 @@ export async function GET(request: Request) {
         style: t.style_preset,
         platform: t.platform_preset,
         status: t.status,
+        isFavourite: t.is_favourite,
         createdAt: t.created_at,
         variants: (t.thumbnail_variants as Array<{
           id: string;
@@ -82,7 +91,6 @@ export async function GET(request: Request) {
           width: number;
           height: number;
           format: string;
-          is_favourite: boolean;
           file_size_bytes: number | null;
         }>).map((v) => ({
           id: v.id,
@@ -90,7 +98,6 @@ export async function GET(request: Request) {
           width: v.width,
           height: v.height,
           format: v.format,
-          isFavourite: v.is_favourite,
           sizeBytes: v.file_size_bytes,
         })),
       })),

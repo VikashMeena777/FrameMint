@@ -1,0 +1,20 @@
+import { updateSession } from '@/lib/supabase/middleware';
+import { type NextRequest } from 'next/server';
+
+export async function middleware(request: NextRequest) {
+  return updateSession(request);
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths EXCEPT:
+     * - _next/static (static files)
+     * - _next/image (image optimization)
+     * - favicon.ico (favicon)
+     * - Static assets (svg, png, jpg, etc.)
+     * - API routes that need to be publicly accessible (ab-test pixel tracking)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|api/ab-test/pixel|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+  ],
+};

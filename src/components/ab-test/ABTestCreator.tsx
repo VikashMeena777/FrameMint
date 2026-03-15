@@ -46,7 +46,7 @@ export function ABTestCreator({ variants, thumbnailId, onCreated }: ABTestCreato
 
     setIsCreating(true);
     try {
-      const res = await fetch('/api/ab-tests', {
+      const res = await fetch('/api/ab-test/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

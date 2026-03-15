@@ -61,14 +61,50 @@ export async function POST(request: Request) {
       );
     }
 
-    // Run the AI generation pipeline
-    const result = await generateThumbnail({
-      userId: user.id,
-      title: parsed.data.title,
-      style: parsed.data.style,
-      platform: parsed.data.platform,
-      variants: parsed.data.variants,
+    // Bug #6 fix: Deduct credit BEFORE generation to prevent race condition
+    const { data: creditResult } = await supabase.rpc('deduct_credits', {
+      p_user_id: user.id,
+      p_amount: 1,
+      p_ref: `pre-gen-${Date.now()}`,
     });
+
+    if (creditResult === false) {
+      return NextResponse.json(
+        {
+          error: 'Insufficient credits. Upgrade your plan for more.',
+          code: 'INSUFFICIENT_CREDITS',
+        },
+        { status: 403 }
+      );
+    }
+
+    // Run the AI generation pipeline (credit already deducted)
+    let result;
+    try {
+      result = await generateThumbnail({
+        userId: user.id,
+        title: parsed.data.title,
+        style: parsed.data.style,
+        platform: parsed.data.platform,
+        variants: parsed.data.variants,
+        skipCreditDeduction: true, // Credit already deducted above
+      });
+    } catch (genError) {
+      // Refund credit on generation failure
+      console.error('[Route] Generation failed, refunding credit...');
+      try {
+        await supabase.rpc('refund_credits', {
+          p_user_id: user.id,
+          p_amount: 1,
+        });
+      } catch {
+        // If refund RPC doesn't exist, manually increment
+        await supabase.from('profiles')
+          .update({ credits_remaining: profile.credits_remaining })
+          .eq('user_id', user.id);
+      }
+      throw genError;
+    }
 
     return NextResponse.json(result);
   } catch (error) {
