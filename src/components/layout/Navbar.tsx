@@ -26,7 +26,8 @@ export function Navbar() {
   const handleSignOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push('/');
+    // Hard redirect to clear server-side cookies (router.push keeps stale session)
+    window.location.href = '/login';
   };
 
   const initials = user?.email

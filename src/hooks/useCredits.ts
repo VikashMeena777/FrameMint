@@ -13,8 +13,8 @@ export function useCredits() {
       if (!response.ok) {
         // User not authenticated or server error — return defaults
         setCredits({
-          remaining: 5,
-          total: 5,
+          remaining: 0,
+          total: 0,
           used: 0,
           percentage: 0,
           plan: 'free',
