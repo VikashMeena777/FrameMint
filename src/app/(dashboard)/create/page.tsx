@@ -24,15 +24,15 @@ import { toast } from 'sonner';
 import type { ThumbnailStyle, Platform } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const thumbnailStyles: { value: ThumbnailStyle; label: string; gradient: string; glow: string }[] = [
-  { value: 'cinematic', label: 'Cinematic', gradient: 'from-violet-600 to-indigo-700', glow: 'rgba(124,58,237,0.3)' },
-  { value: 'gaming', label: 'Gaming', gradient: 'from-emerald-500 to-cyan-600', glow: 'rgba(16,185,129,0.3)' },
-  { value: 'vlog', label: 'Vlog', gradient: 'from-pink-500 to-rose-600', glow: 'rgba(244,63,94,0.3)' },
-  { value: 'educational', label: 'Educational', gradient: 'from-blue-500 to-indigo-600', glow: 'rgba(37,99,235,0.3)' },
-  { value: 'podcast', label: 'Podcast', gradient: 'from-amber-500 to-orange-600', glow: 'rgba(245,158,11,0.3)' },
-  { value: 'minimal', label: 'Minimal', gradient: 'from-slate-500 to-zinc-600', glow: 'rgba(100,116,139,0.3)' },
-  { value: 'bold-text', label: 'Bold Text', gradient: 'from-yellow-500 to-red-600', glow: 'rgba(239,68,68,0.3)' },
-  { value: 'split-screen', label: 'Split Screen', gradient: 'from-teal-500 to-purple-600', glow: 'rgba(20,184,166,0.3)' },
+const thumbnailStyles: { value: ThumbnailStyle; label: string; emoji: string }[] = [
+  { value: 'cinematic', label: 'Cinematic', emoji: '🎬' },
+  { value: 'gaming', label: 'Gaming', emoji: '🎮' },
+  { value: 'vlog', label: 'Vlog', emoji: '📹' },
+  { value: 'educational', label: 'Educational', emoji: '📚' },
+  { value: 'podcast', label: 'Podcast', emoji: '🎙️' },
+  { value: 'minimal', label: 'Minimal', emoji: '✨' },
+  { value: 'bold-text', label: 'Bold Text', emoji: '🔤' },
+  { value: 'split-screen', label: 'Split Screen', emoji: '⬜' },
 ];
 
 const platforms: { value: Platform; label: string; size: string; emoji: string }[] = [
@@ -202,14 +202,13 @@ export default function CreatePage() {
                     key={s.value}
                     onClick={() => setStyle(s.value)}
                     className={cn(
-                      'rounded-xl p-3 text-center transition-all duration-200 border group',
+                      'rounded-xl p-3.5 text-center transition-all duration-200 border',
                       style === s.value
-                        ? 'border-violet-500/40 bg-violet-600/12 shadow-lg'
+                        ? 'border-violet-500/40 bg-violet-600/12'
                         : 'border-white/6 bg-white/[0.02] hover:bg-white/5 hover:border-white/12'
                     )}
-                    style={style === s.value ? { boxShadow: `0 4px 20px ${s.glow}` } : undefined}
                   >
-                    <div className={`mx-auto mb-2.5 h-10 w-full rounded-lg bg-gradient-to-br ${s.gradient} opacity-80 group-hover:opacity-100 transition-opacity`} />
+                    <span className="block text-xl mb-1.5">{s.emoji}</span>
                     <span className="text-xs font-semibold text-[var(--fm-text)]">{s.label}</span>
                   </button>
                 ))}

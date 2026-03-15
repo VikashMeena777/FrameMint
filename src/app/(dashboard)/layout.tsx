@@ -18,25 +18,26 @@ export default function DashboardLayout({
         <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
       </div>
 
-      {/* Main content area shifts based on sidebar state */}
+      {/* Main content area — pushes right on large screens based on sidebar width */}
       <div
-        className="flex flex-col transition-all duration-300 ease-in-out lg:ml-60"
-        style={{ marginLeft: 0 }}
+        className="flex flex-col transition-all duration-300 ease-in-out"
+        style={{ paddingLeft: undefined }}
       >
-        <Navbar />
-        <main className="flex-1 p-4 lg:p-6 pb-10">
-          {children}
-        </main>
-      </div>
-
-      {/* Override sidebar offset on desktop */}
-      <style jsx>{`
-        @media (min-width: 1024px) {
-          div.flex.flex-col {
-            margin-left: ${collapsed ? '68px' : '240px'};
+        {/* Spacer that matches sidebar width on lg+ screens */}
+        <style>{`
+          @media (min-width: 1024px) {
+            [data-dashboard-main] {
+              margin-left: ${collapsed ? '68px' : '240px'};
+            }
           }
-        }
-      `}</style>
+        `}</style>
+        <div data-dashboard-main="" className="flex flex-col min-h-screen transition-all duration-300 ease-in-out">
+          <Navbar />
+          <main className="flex-1 p-4 lg:p-6 pb-10">
+            {children}
+          </main>
+        </div>
+      </div>
     </div>
   );
 }
