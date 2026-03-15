@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import type { Platform } from '@/types';
 
 const platformList: { value: Platform; label: string; size: string }[] = [
-  { value: 'youtube', label: 'YouTube', size: '1280×720' },
+  { value: 'youtube', label: 'YouTube', size: '1920×1080' },
   { value: 'instagram', label: 'Instagram', size: '1080×1080' },
   { value: 'twitter', label: 'Twitter', size: '1200×675' },
   { value: 'linkedin', label: 'LinkedIn', size: '1200×627' },

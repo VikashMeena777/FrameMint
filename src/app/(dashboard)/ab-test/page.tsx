@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import {
   FlaskConical,
   Plus,
@@ -12,6 +12,8 @@ import {
   ExternalLink,
   Eye,
   MousePointerClick,
+  Upload,
+  ImagePlus,
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { cn } from '@/lib/utils';
@@ -46,11 +48,124 @@ const DEMO_TESTS: ABTestLocal[] = [
   },
 ];
 
+function VariantUploadZone({
+  variant,
+  onImageUpload,
+}: {
+  variant: ABVariant;
+  onImageUpload: (file: File) => void;
+}) {
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrag = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDragIn = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.items?.length > 0) setIsDragging(true);
+  }, []);
+
+  const handleDragOut = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      const file = e.dataTransfer.files?.[0];
+      if (file && file.type.startsWith('image/')) onImageUpload(file);
+    },
+    [onImageUpload]
+  );
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) onImageUpload(file);
+  };
+
+  return (
+    <div
+      className={cn(
+        'aspect-video rounded-lg flex items-center justify-center relative overflow-hidden cursor-pointer transition-all duration-200',
+        isDragging
+          ? 'border-2 border-dashed border-[var(--fm-primary)] bg-[var(--fm-primary)]/10'
+          : variant.imageUrl
+            ? 'border border-white/10'
+            : 'border-2 border-dashed border-white/15 bg-white/[0.03] hover:border-[var(--fm-primary)]/40 hover:bg-[var(--fm-primary)]/5'
+      )}
+      onDragEnter={handleDragIn}
+      onDragLeave={handleDragOut}
+      onDragOver={handleDrag}
+      onDrop={handleDrop}
+      onClick={() => fileInputRef.current?.click()}
+    >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      {variant.imageUrl ? (
+        <>
+          <img
+            src={variant.imageUrl}
+            alt={variant.label}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all flex items-center justify-center opacity-0 hover:opacity-100">
+            <div className="text-center">
+              <Upload className="h-5 w-5 mx-auto text-white mb-1" />
+              <p className="text-xs text-white/80">Click to replace</p>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="text-center p-4">
+          <ImagePlus className="h-8 w-8 text-[var(--fm-text-secondary)]/40 mx-auto" />
+          <p className="text-xs text-[var(--fm-text-secondary)] mt-2 font-medium">
+            {isDragging ? 'Drop image here' : 'Click or drag image'}
+          </p>
+          <p className="text-[10px] text-[var(--fm-text-secondary)]/50 mt-0.5">
+            PNG, JPG up to 10MB
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ABTestPage() {
   const [tests, setTests] = useState<ABTestLocal[]>(DEMO_TESTS);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Handle image upload for a variant
+  const handleVariantImageUpload = (testId: string, variantId: string, file: File) => {
+    const url = URL.createObjectURL(file);
+    setTests((prev) =>
+      prev.map((test) =>
+        test.id === testId
+          ? {
+              ...test,
+              variants: test.variants.map((v) =>
+                v.id === variantId ? { ...v, imageUrl: url } : v
+              ),
+            }
+          : test
+      )
+    );
+  };
 
   const createTest = () => {
     if (!newName.trim()) return;
@@ -198,26 +313,18 @@ export default function ABTestPage() {
                           : 'border-white/10 bg-white/2'
                       )}
                     >
-                      {/* Image placeholder */}
-                      <div className="aspect-video bg-white/5 rounded-lg flex items-center justify-center mb-3 relative overflow-hidden">
-                        {variant.imageUrl ? (
-                          <img
-                            src={variant.imageUrl}
-                            alt={variant.label}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="text-center">
-                            <BarChart3 className="h-8 w-8 text-[var(--fm-text-secondary)]/20 mx-auto" />
-                            <p className="text-xs text-[var(--fm-text-secondary)]/40 mt-1">
-                              Drop image here
-                            </p>
-                          </div>
-                        )}
+                      {/* Image upload zone */}
+                      <div className="mb-3 relative">
+                        <VariantUploadZone
+                          variant={variant}
+                          onImageUpload={(file) =>
+                            handleVariantImageUpload(test.id, variant.id, file)
+                          }
+                        />
 
                         {/* Winner badge */}
                         {winner?.id === variant.id && test.status !== 'draft' && (
-                          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+                          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold z-10">
                             Winner
                           </div>
                         )}

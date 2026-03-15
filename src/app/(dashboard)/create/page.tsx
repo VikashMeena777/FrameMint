@@ -13,7 +13,16 @@ import {
   RotateCcw,
   Loader2,
   AlertCircle,
+  Clapperboard,
+  Gamepad2,
+  Camera,
+  GraduationCap,
+  Mic2,
+  Minus,
+  Type,
+  Columns,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useCredits } from '@/hooks/useCredits';
 import { useGeneration } from '@/hooks/useGeneration';
@@ -22,19 +31,19 @@ import { toast } from 'sonner';
 import type { ThumbnailStyle, Platform } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const thumbnailStyles: { value: ThumbnailStyle; label: string; gradient: string }[] = [
-  { value: 'cinematic', label: 'Cinematic', gradient: 'from-purple-600 to-blue-500' },
-  { value: 'gaming', label: 'Gaming', gradient: 'from-green-500 to-cyan-500' },
-  { value: 'vlog', label: 'Vlog', gradient: 'from-pink-500 to-orange-400' },
-  { value: 'educational', label: 'Educational', gradient: 'from-blue-500 to-indigo-500' },
-  { value: 'podcast', label: 'Podcast', gradient: 'from-amber-500 to-red-500' },
-  { value: 'minimal', label: 'Minimal', gradient: 'from-gray-400 to-gray-600' },
-  { value: 'bold-text', label: 'Bold Text', gradient: 'from-yellow-500 to-red-500' },
-  { value: 'split-screen', label: 'Split Screen', gradient: 'from-teal-500 to-purple-500' },
+const thumbnailStyles: { value: ThumbnailStyle; label: string; gradient: string; icon: LucideIcon; desc: string }[] = [
+  { value: 'cinematic', label: 'Cinematic', gradient: 'from-purple-600 to-blue-500', icon: Clapperboard, desc: 'Epic movie poster look' },
+  { value: 'gaming', label: 'Gaming', gradient: 'from-green-500 to-cyan-500', icon: Gamepad2, desc: 'High-energy neon vibes' },
+  { value: 'vlog', label: 'Vlog', gradient: 'from-pink-500 to-orange-400', icon: Camera, desc: 'Warm, personal feel' },
+  { value: 'educational', label: 'Educational', gradient: 'from-blue-500 to-indigo-500', icon: GraduationCap, desc: 'Clean & professional' },
+  { value: 'podcast', label: 'Podcast', gradient: 'from-amber-500 to-red-500', icon: Mic2, desc: 'Bold audio aesthetic' },
+  { value: 'minimal', label: 'Minimal', gradient: 'from-gray-400 to-gray-600', icon: Minus, desc: 'Less is more' },
+  { value: 'bold-text', label: 'Bold Text', gradient: 'from-yellow-500 to-red-500', icon: Type, desc: 'Text-forward impact' },
+  { value: 'split-screen', label: 'Split Screen', gradient: 'from-teal-500 to-purple-500', icon: Columns, desc: 'Side-by-side drama' },
 ];
 
 const platforms: { value: Platform; label: string; size: string }[] = [
-  { value: 'youtube', label: 'YouTube', size: '1280×720' },
+  { value: 'youtube', label: 'YouTube', size: '1920×1080' },
   { value: 'instagram', label: 'Instagram', size: '1080×1080' },
   { value: 'twitter', label: 'Twitter', size: '1200×675' },
   { value: 'linkedin', label: 'LinkedIn', size: '1200×627' },
@@ -176,21 +185,27 @@ export default function CreatePage() {
                 Choose a Style
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {thumbnailStyles.map((s) => (
-                  <button
-                    key={s.value}
-                    onClick={() => setStyle(s.value)}
-                    className={cn(
-                      'rounded-xl p-3 text-center transition-all duration-200 border',
-                      style === s.value
-                        ? 'border-[var(--fm-primary)] bg-[var(--fm-primary)]/10 shadow-[0_0_20px_rgba(108,92,231,0.15)]'
-                        : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
-                    )}
-                  >
-                    <div className={`mx-auto mb-2 h-12 w-full rounded-lg bg-gradient-to-br ${s.gradient} opacity-60`} />
-                    <span className="text-xs font-medium text-[var(--fm-text)]">{s.label}</span>
-                  </button>
-                ))}
+                {thumbnailStyles.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <button
+                      key={s.value}
+                      onClick={() => setStyle(s.value)}
+                      className={cn(
+                        'rounded-xl p-4 text-left transition-all duration-200 border group/style',
+                        style === s.value
+                          ? 'border-[var(--fm-primary)] bg-[var(--fm-primary)]/10 shadow-[0_0_20px_rgba(108,92,231,0.15)]'
+                          : 'border-white/5 bg-white/[0.02] hover:bg-white/5'
+                      )}
+                    >
+                      <div className={`inline-flex items-center justify-center h-10 w-10 rounded-lg bg-gradient-to-br ${s.gradient} mb-3 opacity-80`}>
+                        <Icon className="h-5 w-5 text-white" />
+                      </div>
+                      <p className="text-sm font-medium text-[var(--fm-text)]">{s.label}</p>
+                      <p className="text-xs text-[var(--fm-text-secondary)] mt-0.5">{s.desc}</p>
+                    </button>
+                  );
+                })}
               </div>
             </GlassCard>
 
