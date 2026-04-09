@@ -1,0 +1,35 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Run every day at 6 AM UTC (11:30 AM IST)
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping FrameMint Supabase
+        run: |
+          echo "🏓 Pinging FrameMint Supabase..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            "https://ndxhddaovzichvutqmjt.supabase.co/rest/v1/profiles?select=count&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5keGhkZGFvdnppY2h2dXRxbWp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDkxOTEsImV4cCI6MjA4ODk4NTE5MX0.gEyIdJQ33XuP9qDUskDMibETwiS5Zi31YVov-763b5o" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5keGhkZGFvdnppY2h2dXRxbWp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MDkxOTEsImV4cCI6MjA4ODk4NTE5MX0.gEyIdJQ33XuP9qDUskDMibETwiS5Zi31YVov-763b5o")
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+          echo "Status: $HTTP_CODE"
+          echo "Body: $BODY"
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "✅ FrameMint Supabase is alive!"
+          else
+            echo "❌ FrameMint ping failed with status $HTTP_CODE"
+            exit 1
+          fi
+
+      - name: Summary
+        run: |
+          echo "================================================"
+          echo "🎉 Keep-alive ping completed at $(date -u)"
+          echo "================================================"

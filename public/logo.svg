@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+  <defs>
+    <linearGradient id="fm-grad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00D2D3"/>
+      <stop offset="50%" stop-color="#6EEEB4"/>
+      <stop offset="100%" stop-color="#A8EDBA"/>
+    </linearGradient>
+  </defs>
+  <!-- F letter -->
+  <path d="M4 8 L4 32 L10 32 L10 22 L18 22 L18 17 L10 17 L10 13 L20 13 L20 8 Z" fill="url(#fm-grad)"/>
+  <!-- M letter -->
+  <path d="M18 8 L18 32 L24 32 L24 18 L28 26 L32 18 L32 32 L38 32 L38 8 L32 8 L28 18 L24 8 Z" fill="url(#fm-grad)" opacity="0.85"/>
+</svg>

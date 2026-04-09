@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "src/app/api/generate/**/*.ts": {
+      "maxDuration": 120
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/refill-credits",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/keep-alive",
+      "schedule": "0 0 */2 * *"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+name: Scheduled Tasks
+on:
+  schedule:
+    - cron: '0 0 * * *' # Daily at midnight UTC
+
+jobs:
+  credit-refill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refill monthly credits
+        run: |
+          curl -sS -X POST "${{ secrets.APP_URL }}/api/cron/refill-credits" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
+
+  cleanup-expired:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup expired storage
+        run: |
+          curl -sS -X POST "${{ secrets.APP_URL }}/api/cron/cleanup-storage" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
